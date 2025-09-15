@@ -211,8 +211,9 @@
 }
 
 # Paths
-$inputPath = "C:\Users\sm520\Desktop\SOP - ADFS Certificate Renewal_v0.1 - for merge.docx"
+$inputPath = "C:\Users\xxxxxxxxx\Desktop\SOP - ADFS Certificate Renewal_v0.1 - for merge.docx"
 $outputPath = "C:\temp\CMMI_Level7_SOP_Certificate_Renewal.docx"
 
 # Execute Formatting
 Format-CMMI7SOP -InputPath $inputPath -OutputPath $outputPath
+
