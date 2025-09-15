@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Effort Estimation Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        .input-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .results-section {
+            padding: 30px;
+            background: white;
+            border-left: 3px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            height: fit-content;
+        }
+        
+        .phase-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #3498db;
+        }
+        
+        .phase-card.phase-2 {
+            border-left-color: #e74c3c;
+        }
+        
+        .phase-card.phase-3 {
+            border-left-color: #f39c12;
+        }
+        
+        .phase-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .phase-number {
+            background: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .phase-card.phase-2 .phase-number {
+            background: #e74c3c;
+        }
+        
+        .phase-card.phase-3 .phase-number {
+            background: #f39c12;
+        }
+        
+        .phase-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .task-group {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .task-group h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 8px;
+        }
+        
+        .task-input {
+            display: grid;
+            grid-template-columns: 1fr 120px 60px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .task-input input[type="text"] {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+        
+        .task-input input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .task-input input[type="number"] {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            transition: border-color 0.3s;
+        }
+        
+        .task-input input[type="number"]:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+        
+        .add-task-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        .add-task-btn:hover {
+            background: #2ecc71;
+        }
+        
+        .remove-task-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .remove-task-btn:hover {
+            background: #c0392b;
+        }
+        
+        .risk-factor-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #9b59b6;
+        }
+        
+        .risk-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            margin-top: 10px;
+        }
+        
+        .risk-select:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+        
+        .results-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .results-card h3 {
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .phase-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .phase-total:last-child {
+            border-bottom: none;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .breakdown-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .breakdown-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+            color: #27ae60;
+        }
+        
+        .export-section {
+            text-align: center;
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .export-btn {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 0 10px;
+            transition: background 0.3s;
+        }
+        
+        .export-btn:hover {
+            background: #2c3e50;
+        }
+        
+        .project-info {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .project-info input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        
+        .project-info input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-section {
+                position: static;
+            }
+            
+            .task-input {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Weighted Task-Based Effort Estimation</h1>
+            <p>Interactive Calculator for IT Projects, NSSRs & Activities</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="project-info">
+                    <h3>Project Information</h3>
+                    <input type="text" id="projectName" placeholder="Project/Activity Name" />
+                    <input type="text" id="projectDescription" placeholder="Brief Description" />
+                    <input type="text" id="requestor" placeholder="Requestor/Stakeholder" />
+                </div>
+                
+                <div class="phase-card phase-1">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div class="phase-title">Planning, Design & Documentation</div>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Design & Planning Tasks</h4>
+                        <div id="phase1-design-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="Requirements analysis and scope definition" />
+                                <input type="number" placeholder="Hours" value="2" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase1-design-tasks')">+ Add Design Task</button>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Documentation Tasks</h4>
+                        <div id="phase1-doc-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="Create implementation runbook" />
+                                <input type="number" placeholder="Hours" value="1.5" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase1-doc-tasks')">+ Add Documentation Task</button>
+                    </div>
+                </div>
+                
+                <div class="phase-card phase-2">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div class="phase-title">Core Implementation</div>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Setup & Configuration</h4>
+                        <div id="phase2-setup-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="Environment setup and tool installation" />
+                                <input type="number" placeholder="Hours" value="2" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase2-setup-tasks')">+ Add Setup Task</button>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Development & Implementation</h4>
+                        <div id="phase2-dev-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="Core functionality development" />
+                                <input type="number" placeholder="Hours" value="6" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase2-dev-tasks')">+ Add Development Task</button>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Deployment & Configuration</h4>
+                        <div id="phase2-deploy-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="System deployment and initial configuration" />
+                                <input type="number" placeholder="Hours" value="2" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase2-deploy-tasks')">+ Add Deployment Task</button>
+                    </div>
+                </div>
+                
+                <div class="phase-card phase-3">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div class="phase-title">Testing & Validation</div>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Functional Testing</h4>
+                        <div id="phase3-functional-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="Feature and functionality testing" />
+                                <input type="number" placeholder="Hours" value="2" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase3-functional-tasks')">+ Add Functional Test</button>
+                    </div>
+                    
+                    <div class="task-group">
+                        <h4>Security & Compliance</h4>
+                        <div id="phase3-security-tasks">
+                            <div class="task-input">
+                                <input type="text" placeholder="Task description..." value="Security validation and access testing" />
+                                <input type="number" placeholder="Hours" value="1.5" min="0" step="0.5" />
+                                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+                            </div>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask('phase3-security-tasks')">+ Add Security Test</button>
+                    </div>
+                </div>
+                
+                <div class="risk-factor-section">
+                    <h3>Risk & Complexity Factor</h3>
+                    <select class="risk-select" id="riskFactor" onchange="calculateTotal()">
+                        <option value="1.0">1.0 - Perfect environment, well documented, experienced team</option>
+                        <option value="1.1">1.1 - Standard environment, minor complexity</option>
+                        <option value="1.2" selected>1.2 - Typical environment, standard complexity</option>
+                        <option value="1.3">1.3 - Complex environment, limited documentation</option>
+                        <option value="1.4">1.4 - High complexity, strict change controls</option>
+                        <option value="1.5">1.5 - Very complex, new technology, extensive compliance</option>
+                        <option value="1.6">1.6 - Extremely complex, multiple unknowns</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <div class="results-card">
+                    <h3>Estimated Effort</h3>
+                    <div class="phase-total">
+                        <span>Phase 1 Total:</span>
+                        <span id="phase1Total">3.5 hrs</span>
+                    </div>
+                    <div class="phase-total">
+                        <span>Phase 2 Total:</span>
+                        <span id="phase2Total">10.0 hrs</span>
+                    </div>
+                    <div class="phase-total">
+                        <span>Phase 3 Total:</span>
+                        <span id="phase3Total">3.5 hrs</span>
+                    </div>
+                    <div class="phase-total">
+                        <span>Base Total:</span>
+                        <span id="baseTotal">17.0 hrs</span>
+                    </div>
+                    <div class="phase-total">
+                        <span>FINAL ESTIMATE:</span>
+                        <span id="finalTotal">20.4 hrs</span>
+                    </div>
+                </div>
+                
+                <div class="breakdown-card">
+                    <h3>Effort Breakdown</h3>
+                    <div class="breakdown-item">
+                        <span>Base Hours:</span>
+                        <span id="breakdownBase">17.0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Risk Factor:</span>
+                        <span id="breakdownRisk">1.2</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Buffer Hours:</span>
+                        <span id="breakdownBuffer">3.4</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Total Hours:</span>
+                        <span id="breakdownTotal">20.4</span>
+                    </div>
+                </div>
+                
+                <div class="breakdown-card">
+                    <h3>Duration Estimates</h3>
+                    <div class="breakdown-item">
+                        <span>Person-Days (8hr):</span>
+                        <span id="personDays">2.6 days</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Business Days:</span>
+                        <span id="businessDays">3-4 days</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Calendar Weeks:</span>
+                        <span id="calendarWeeks">1 week</span>
+                    </div>
+                </div>
+                
+                <div class="export-section">
+                    <button class="export-btn" onclick="generateReport()">📄 Generate Report</button>
+                    <button class="export-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addTask(containerId) {
+            const container = document.getElementById(containerId);
+            const taskInput = document.createElement('div');
+            taskInput.className = 'task-input';
+            taskInput.innerHTML = `
+                <input type="text" placeholder="Task description..." />
+                <input type="number" placeholder="Hours" value="1" min="0" step="0.5" onchange="calculateTotal()" />
+                <button class="remove-task-btn" onclick="removeTask(this)">×</button>
+            `;
+            container.appendChild(taskInput);
+            calculateTotal();
+        }
+        
+        function removeTask(button) {
+            button.parentElement.remove();
+            calculateTotal();
+        }
+        
+        function calculateTotal() {
+            // Calculate Phase 1
+            const phase1Tasks = document.querySelectorAll('#phase1-design-tasks input[type="number"], #phase1-doc-tasks input[type="number"]');
+            let phase1Total = 0;
+            phase1Tasks.forEach(input => {
+                phase1Total += parseFloat(input.value) || 0;
+            });
+            
+            // Calculate Phase 2
+            const phase2Tasks = document.querySelectorAll('#phase2-setup-tasks input[type="number"], #phase2-dev-tasks input[type="number"], #phase2-deploy-tasks input[type="number"]');
+            let phase2Total = 0;
+            phase2Tasks.forEach(input => {
+                phase2Total += parseFloat(input.value) || 0;
+            });
+            
+            // Calculate Phase 3
+            const phase3Tasks = document.querySelectorAll('#phase3-functional-tasks input[type="number"], #phase3-security-tasks input[type="number"]');
+            let phase3Total = 0;
+            phase3Tasks.forEach(input => {
+                phase3Total += parseFloat(input.value) || 0;
+            });
+            
+            const baseTotal = phase1Total + phase2Total + phase3Total;
+            const riskFactor = parseFloat(document.getElementById('riskFactor').value);
+            const finalTotal = baseTotal * riskFactor;
+            const bufferHours = finalTotal - baseTotal;
+            
+            // Update display
+            document.getElementById('phase1Total').textContent = phase1Total.toFixed(1) + ' hrs';
+            document.getElementById('phase2Total').textContent = phase2Total.toFixed(1) + ' hrs';
+            document.getElementById('phase3Total').textContent = phase3Total.toFixed(1) + ' hrs';
+            document.getElementById('baseTotal').textContent = baseTotal.toFixed(1) + ' hrs';
+            document.getElementById('finalTotal').textContent = finalTotal.toFixed(1) + ' hrs';
+            
+            document.getElementById('breakdownBase').textContent = baseTotal.toFixed(1);
+            document.getElementById('breakdownRisk').textContent = riskFactor.toFixed(1);
+            document.getElementById('breakdownBuffer').textContent = bufferHours.toFixed(1);
+            document.getElementById('breakdownTotal').textContent = finalTotal.toFixed(1);
+            
+            // Calculate durations
+            const personDays = finalTotal / 8;
+            const businessDays = Math.ceil(personDays * 1.2); // Account for meetings, interruptions
+            const calendarWeeks = Math.ceil(businessDays / 5);
+            
+            document.getElementById('personDays').textContent = personDays.toFixed(1) + ' days';
+            document.getElementById('businessDays').textContent = businessDays + '-' + (businessDays + 1) + ' days';
+            document.getElementById('calendarWeeks').textContent = calendarWeeks + (calendarWeeks === 1 ? ' week' : ' weeks');
+        }
+        
+        function generateReport() {
+            const projectName = document.getElementById('projectName').value || 'Unnamed Project';
+            const projectDescription = document.getElementById('projectDescription').value || 'No description provided';
+            const requestor = document.getElementById('requestor').value || 'Not specified';
+            
+            let reportContent = `
+                <h2>Effort Estimation Report</h2>
+                <p><strong>Project:</strong> ${projectName}</p>
+                <p><strong>Description:</strong> ${projectDescription}</p>
+                <p><strong>Requestor:</strong> ${requestor}</p>
+                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                <hr>
+                <h3>Task Breakdown</h3>
+            `;
+            
+            // Add all tasks to report
+            const allTasks = document.querySelectorAll('.task-input');
+            let currentPhase = 'Phase 1: Planning & Design';
+            reportContent += `<h4>${currentPhase}</h4><ul>`;
+            
+            allTasks.forEach((task, index) => {
+                const description = task.querySelector('input[type="text"]').value;
+                const hours = task.querySelector('input[type="number"]').value;
+                
+                // Determine which phase this task belongs to
+                const phaseElement = task.closest('.phase-card');
+                let phaseName = 'Phase 1: Planning & Design';
+                if (phaseElement.classList.contains('phase-2')) {
+                    phaseName = 'Phase 2: Core Implementation';
+                } else if (phaseElement.classList.contains('phase-3')) {
+                    phaseName = 'Phase 3: Testing & Validation';
+                }
+                
+                if (phaseName !== currentPhase) {
+                    reportContent += '</ul>';
+                    currentPhase = phaseName;
+                    reportContent += `<h4>${currentPhase}</h4><ul>`;
+                }
+                
+                reportContent += `<li>${description}: ${hours} hours</li>`;
+            });
+            
+            reportContent += `</ul>
+                <hr>
+                <h3>Summary</h3>
+                <p><strong>Base Effort:</strong> ${document.getElementById('baseTotal').textContent}</p>
+                <p><strong>Risk Factor:</strong> ${document.getElementById('riskFactor').value}</p>
+                <p><strong>Final Estimate:</strong> ${document.getElementById('finalTotal').textContent}</p>
+                <p><strong>Duration:</strong> ${document.getElementById('personDays').textContent} (${document.getElementById('businessDays').textContent})</p>
+            `;
+            
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Effort Estimation Report - ${projectName}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                            h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+                            h3 { color: #34495e; margin-top: 30px; }
+                            h4 { color: #7f8c8d; margin-top: 20px; }
+                            ul { margin-left: 20px; }
+                            hr { margin: 30px 0; border: 1px solid #bdc3c7; }
+                        </style>
+                    </head>
+                    <body>${reportContent}</body>
+                </html>
+            `);
+        }
+        
+        function exportToCSV() {
+            const projectName = document.getElementById('projectName').value || 'Unnamed Project';
+            let csvContent = 'Phase,Task Group,Task Description,Hours\n';
+            
+            // Get all tasks
+            const allTasks = document.querySelectorAll('.task-input');
+            allTasks.forEach(task => {
+                const description = task.querySelector('input[type="text"]').value;
+                const hours = task.querySelector('input[type="number"]').value;
+                
+                // Determine phase and task group
+                const phaseElement = task.closest('.phase-card');
+                const taskGroupElement = task.closest('.task-group');
+                
+                let phaseName = 'Planning & Design';
+                if (phaseElement.classList.contains('phase-2')) {
+                    phaseName = 'Core Implementation';
+                } else if (phaseElement.classList.contains('phase-3')) {
+                    phaseName = 'Testing & Validation';
+                }
+                
+                const taskGroup = taskGroupElement.querySelector('h4').textContent;
+                
+                csvContent += `"${phaseName}","${taskGroup}","${description}","${hours}"\n`;
+            });
+            
+            // Add summary
+            csvContent += '\nSummary\n';
+            csvContent += `"Phase 1 Total","","","${document.getElementById('phase1Total').textContent.replace(' hrs', '')}"\n`;
+            csvContent += `"Phase 2 Total","","","${document.getElementById('phase2Total').textContent.replace(' hrs', '')}"\n`;
+            csvContent += `"Phase 3 Total","","","${document.getElementById('phase3Total').textContent.replace(' hrs', '')}"\n`;
+            csvContent += `"Base Total","","","${document.getElementById('baseTotal').textContent.replace(' hrs', '')}"\n`;
+            csvContent += `"Risk Factor","","","${document.getElementById('riskFactor').value}"\n`;
+            csvContent += `"Final Estimate","","","${document.getElementById('finalTotal').textContent.replace(' hrs', '')}"\n`;
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${projectName.replace(/[^a-zA-Z0-9]/g, '_')}_effort_estimate.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Add event listeners to all existing number inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                input.addEventListener('change', calculateTotal);
+                input.addEventListener('keyup', calculateTotal);
+            });
+            calculateTotal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional SOP Generator - Enhanced DOCX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .export-options {
+            background: #34495e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .export-btn.docx {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 30px;
+            border-right: 1px solid #eee;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .preview-section {
+            flex: 1;
+            padding: 20px;
+            background: #f8f9fa;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .logo-upload {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logo-upload:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .logo-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .step-container {
+            margin-bottom: 20px;
+        }
+
+        .step-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .add-step-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .remove-step-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .sop-document {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .doc-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-content {
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .doc-footer {
+            background: #ecf0f1;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .logo-preview {
+            max-width: 100px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .toc h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 5px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .version-history {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+
+        .status-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script src="https://unpkg.com/docx@8.0.0/build/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Professional SOP Generator</h1>
+            <p>Create standardized operating procedures with professional formatting</p>
+        </div>
+
+        <div class="export-options">
+            <button class="export-btn docx" onclick="generateDOCX()" id="docxBtn">
+                📄 Download Professional DOCX
+            </button>
+            <button class="export-btn" onclick="generatePDF()" id="pdfBtn">
+                📋 Print/PDF
+            </button>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>SOP Information</h2>
+                
+                <div class="form-group">
+                    <label>Company Logo</label>
+                    <div class="logo-upload" onclick="document.getElementById('logoInput').click()">
+                        <input type="file" id="logoInput" accept="image/*">
+                        <p id="logoText">📁 Click to upload company logo</p>
+                        <img id="logoPreview" style="display: none; max-width: 100px; margin-top: 10px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="companyName" placeholder="Enter company name" value="TechCorp Solutions">
+                </div>
+
+                <div class="form-group">
+                    <label>SOP Title</label>
+                    <input type="text" id="sopTitle" placeholder="e.g., Data Backup Procedures" value="Server Maintenance Procedure">
+                </div>
+
+                <div class="form-group">
+                    <label>SOP ID/Code</label>
+                    <input type="text" id="sopCode" placeholder="e.g., SOP-IT-001" value="SOP-IT-001">
+                </div>
+
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" id="department" placeholder="e.g., IT Department" value="IT Operations">
+                </div>
+
+                <div class="form-group">
+                    <label>Version</label>
+                    <input type="text" id="version" value="1.0">
+                </div>
+
+                <div class="form-group">
+                    <label>Effective Date</label>
+                    <input type="date" id="effectiveDate">
+                </div>
+
+                <div class="form-group">
+                    <label>Review Date</label>
+                    <input type="date" id="reviewDate">
+                </div>
+
+                <div class="form-group">
+                    <label>Approved By</label>
+                    <input type="text" id="approvedBy" placeholder="Name and title" value="John Smith, IT Director">
+                </div>
+
+                <div class="form-group">
+                    <label>Purpose/Objective</label>
+                    <textarea id="purpose" placeholder="Describe the purpose and objective of this SOP">This SOP establishes standardized procedures for routine server maintenance to ensure optimal system performance, minimize downtime, and maintain data integrity across all production environments.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Scope</label>
+                    <textarea id="scope" placeholder="Define the scope and applicability">This procedure applies to all production servers in the data center, including web servers, database servers, and application servers. It covers routine maintenance activities performed during scheduled maintenance windows.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Responsibilities</label>
+                    <textarea id="responsibilities" placeholder="Define roles and responsibilities">IT Operations Team: Execute maintenance procedures and document results. System Administrator: Oversee maintenance activities and approve schedule. Network Engineer: Monitor network connectivity during maintenance.</textarea>
+                </div>
+
+                <h3>Procedure Steps</h3>
+                <div id="stepsContainer">
+                    <div class="step-container">
+                        <div class="step-header">
+                            Step 1
+                            <button type="button" class="remove-step-btn" onclick="removeStep(this)">Remove</button>
+                        </div>
+                        <div class="step-content">
+                            <input type="text" placeholder="Step title" class="step-title" value="Pre-maintenance Checklist">
+                            <textarea placeholder="Step description" class="step-description">Verify maintenance window schedule, notify stakeholders, backup critical data, and confirm all team members are available for the maintenance window.</textarea>
+                        </div>
+                    </div>
+                    <div class="step-container">
+                        <div class="step-header">
+                            Step 2
+                            <button type="button" class="remove-step-btn" onclick="removeStep(this)">Remove</button>
+                        </div>
+                        <div class="step-content">
+                            <input type="text" placeholder="Step title" class="step-title" value="System Health Check">
+                            <textarea placeholder="Step description" class="step-description">Monitor system performance metrics, check disk space utilization, review error logs, and verify all services are running properly before beginning maintenance.</textarea>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="add-step-btn" onclick="addStep()">+ Add Step</button>
+
+                <div class="form-group">
+                    <label>Safety Considerations</label>
+                    <textarea id="safety" placeholder="List any safety considerations or precautions">Ensure proper backup procedures are completed before maintenance. Maintain communication protocols during maintenance window. Have rollback procedures ready in case of issues.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Quality Controls</label>
+                    <textarea id="quality" placeholder="Describe quality control measures">Post-maintenance verification tests must be completed. All changes must be documented. Performance metrics must be monitored for 24 hours post-maintenance.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>References/Related Documents</label>
+                    <textarea id="references" placeholder="List related documents, forms, or references">Change Management Policy (DOC-001), Backup and Recovery Procedures (SOP-IT-002), Incident Response Plan (SOP-IT-003)</textarea>
+                </div>
+
+                <button class="generate-btn" onclick="generatePreview()">🚀 Generate Preview</button>
+            </div>
+
+            <div class="preview-section">
+                <div id="sopPreview">
+                    <p style="text-align: center; color: #7f8c8d; margin-top: 50px;">
+                        📋 Click "Generate Preview" to see your SOP here
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+    <script>
+        let logoData = '';
+        let stepCounter = 2;
+        let sopData = null;
+
+        // Logo upload handler
+        document.getElementById('logoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoData = e.target.result;
+                    const preview = document.getElementById('logoPreview');
+                    const text = document.getElementById('logoText');
+                    preview.src = logoData;
+                    preview.style.display = 'block';
+                    text.textContent = 'Logo uploaded successfully!';
+                    showStatus('Logo uploaded successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addStep() {
+            stepCounter++;
+            const container = document.getElementById('stepsContainer');
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'step-container';
+            stepDiv.innerHTML = `
+                <div class="step-header">
+                    Step ${stepCounter}
+                    <button type="button" class="remove-step-btn" onclick="removeStep(this)">Remove</button>
+                </div>
+                <div class="step-content">
+                    <input type="text" placeholder="Step title" class="step-title">
+                    <textarea placeholder="Step description" class="step-description"></textarea>
+                </div>
+            `;
+            container.appendChild(stepDiv);
+        }
+
+        function removeStep(button) {
+            button.closest('.step-container').remove();
+            updateStepNumbers();
+        }
+
+        function updateStepNumbers() {
+            const steps = document.querySelectorAll('.step-header');
+            steps.forEach((step, index) => {
+                step.firstChild.textContent = `Step ${index + 1}`;
+            });
+            stepCounter = steps.length;
+        }
+
+        function collectSOPData() {
+            const data = {
+                companyName: document.getElementById('companyName').value,
+                sopTitle: document.getElementById('sopTitle').value,
+                sopCode: document.getElementById('sopCode').value,
+                department: document.getElementById('department').value,
+                version: document.getElementById('version').value,
+                effectiveDate: document.getElementById('effectiveDate').value,
+                reviewDate: document.getElementById('reviewDate').value,
+                approvedBy: document.getElementById('approvedBy').value,
+                purpose: document.getElementById('purpose').value,
+                scope: document.getElementById('scope').value,
+                responsibilities: document.getElementById('responsibilities').value,
+                safety: document.getElementById('safety').value,
+                quality: document.getElementById('quality').value,
+                references: document.getElementById('references').value
+            };
+
+            // Collect steps
+            const steps = [];
+            document.querySelectorAll('.step-container').forEach((step, index) => {
+                const title = step.querySelector('.step-title').value;
+                const description = step.querySelector('.step-description').value;
+                if (title || description) {
+                    steps.push({ title, description, number: index + 1 });
+                }
+            });
+
+            return { data, steps };
+        }
+
+        function generatePreview() {
+            try {
+                const { data, steps } = collectSOPData();
+                sopData = { data, steps };
+                
+                const sopHTML = createSOPDocument(data, steps);
+                document.getElementById('sopPreview').innerHTML = sopHTML;
+                
+                showStatus('Preview generated successfully! You can now download as professional DOCX or print as PDF.', 'success');
+            } catch (error) {
+                console.error('Preview generation error:', error);
+                showStatus('Error generating preview: ' + error.message, 'error');
+            }
+        }
+
+        async function generateDOCX() {
+            if (!sopData) {
+                showStatus('Please generate preview first!', 'error');
+                return;
+            }
+
+            const docxBtn = document.getElementById('docxBtn');
+            const originalHTML = docxBtn.innerHTML;
+            docxBtn.innerHTML = '<span class="loading"></span> Creating Document...';
+            docxBtn.disabled = true;
+
+            // Skip DOCX attempt - go directly to the working solution
+            createAdvancedWordDocument(sopData.data, sopData.steps);
+            showStatus('Professional Word document created! Open in Word and insert your PNG logo at the placeholder.', 'success');
+
+            docxBtn.innerHTML = originalHTML;
+            docxBtn.disabled = false;
+        }
+
+        // New advanced Word-compatible method with better logo support
+        function createAdvancedWordDocument(data, steps) {
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+                      xmlns:w="urn:schemas-microsoft-com:office:word" 
+                      xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="ProgId" content="Word.Document">
+                    <meta name="Generator" content="Microsoft Word">
+                    <meta name="Originator" content="Microsoft Word">
+                    <title>${data.sopTitle}</title>
+                    <style>
+                        @page {
+                            size: 8.5in 11in;
+                            margin: 1in;
+                        }
+                        body { 
+                            font-family: 'Calibri', Arial, sans-serif; 
+                            font-size: 11pt;
+                            line-height: 1.6; 
+                            color: #333;
+                        }
+                        .title-page { 
+                            page-break-after: always; 
+                            text-align: center; 
+                            padding-top: 2in;
+                        }
+                        .logo-space {
+                            height: 120px;
+                            border: 2px dashed #ccc;
+                            margin: 0 auto 30px auto;
+                            width: 300px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background-color: #f9f9f9;
+                            font-style: italic;
+                            color: #666;
+                        }
+                        .company-title { 
+                            font-size: 36pt; 
+                            font-weight: bold; 
+                            color: #2c3e50; 
+                            margin: 30px 0; 
+                        }
+                        .sop-title { 
+                            font-size: 28pt; 
+                            font-weight: bold; 
+                            color: #3498db; 
+                            margin: 20px 0; 
+                        }
+                        .sop-subtitle {
+                            font-size: 24pt;
+                            color: #2c3e50;
+                            margin: 40px 0 20px 0;
+                        }
+                        .doc-info { 
+                            font-size: 14pt; 
+                            margin: 10px 0;
+                            color: #555;
+                        }
+                        .version-page {
+                            page-break-after: always;
+                            padding-top: 50px;
+                        }
+                        .toc-page {
+                            page-break-after: always;
+                            padding-top: 50px;
+                        }
+                        .content-page {
+                            padding-top: 50px;
+                        }
+                        .section-header { 
+                            font-size: 18pt; 
+                            font-weight: bold; 
+                            color: #2c3e50; 
+                            margin: 30px 0 15px 0; 
+                            padding: 10px 0; 
+                            border-bottom: 2px solid #3498db; 
+                        }
+                        .info-table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin: 20px 0; 
+                        }
+                        .info-table th { 
+                            background-color: #3498db; 
+                            color: white;
+                            padding: 12px; 
+                            border: 1px solid #2980b9; 
+                            font-weight: bold; 
+                            text-align: left; 
+                            width: 30%; 
+                        }
+                        .info-table td { 
+                            padding: 12px; 
+                            border: 1px solid #ddd; 
+                            background-color: white;
+                        }
+                        .step { 
+                            background-color: #f8f9fa; 
+                            padding: 15px; 
+                            margin: 15px 0; 
+                            border-left: 4px solid #3498db; 
+                        }
+                        .step-title { 
+                            font-weight: bold; 
+                            color: #3498db; 
+                            margin-bottom: 8px;
+                            font-size: 12pt;
+                        }
+                        h1, h2, h3 { color: #2c3e50; }
+                        h1 { font-size: 18pt; margin-top: 30px; }
+                        h2 { font-size: 16pt; margin-top: 25px; }
+                        h3 { font-size: 14pt; margin-top: 20px; }
+                        .toc-list { list-style: none; padding-left: 0; }
+                        .toc-list li { padding: 8px 0; border-bottom: 1px dotted #ddd; }
+                        .footer { 
+                            margin-top: 40px; 
+                            padding-top: 20px; 
+                            border-top: 1px solid #ddd; 
+                            text-align: center; 
+                            font-size: 10pt; 
+                            color: #666; 
+                        }
+                    </style>
+                </head>
+                <body>
+                    <!-- TITLE PAGE -->
+                    <div class="title-page">
+                        <div class="logo-space">
+                            INSERT YOUR PNG LOGO HERE<br>
+                            (Delete this box after inserting logo)
+                        </div>
+                        <div class="company-title">${data.companyName}</div>
+                        <div class="sop-subtitle">STANDARD OPERATING PROCEDURE</div>
+                        <div class="sop-title">${data.sopTitle}</div>
+                        <div class="doc-info">Document ID: ${data.sopCode}</div>
+                        <div class="doc-info">Version: ${data.version}</div>
+                        <div class="doc-info">Department: ${data.department}</div>
+                        <div class="doc-info" style="margin-top: 40px;">Effective Date: ${data.effectiveDate}</div>
+                        <div class="doc-info">Review Date: ${data.reviewDate}</div>
+                        <div class="doc-info" style="font-weight: bold; margin-top: 20px;">Approved By: ${data.approvedBy}</div>
+                    </div>
+
+                    <!-- VERSION CONTROL PAGE -->
+                    <div class="version-page">
+                        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 40px;">DOCUMENT CONTROL AND VERSION HISTORY</h1>
+                        
+                        <table class="info-table">
+                            <tr><th>Document Title</th><td>${data.sopTitle}</td></tr>
+                            <tr><th>Document ID</th><td>${data.sopCode}</td></tr>
+                            <tr><th>Department</th><td>${data.department}</td></tr>
+                            <tr><th>Version</th><td>${data.version}</td></tr>
+                            <tr><th>Effective Date</th><td>${data.effectiveDate}</td></tr>
+                            <tr><th>Review Date</th><td>${data.reviewDate}</td></tr>
+                            <tr><th>Approved By</th><td>${data.approvedBy}</td></tr>
+                        </table>
+
+                        <h2 style="margin-top: 40px;">VERSION HISTORY</h2>
+                        <table class="info-table">
+                            <tr>
+                                <th style="width: 15%;">Version</th>
+                                <th style="width: 20%;">Date</th>
+                                <th style="width: 45%;">Changes Made</th>
+                                <th style="width: 20%;">Approved By</th>
+                            </tr>
+                            <tr>
+                                <td>${data.version}</td>
+                                <td>${data.effectiveDate}</td>
+                                <td>Initial version of the document</td>
+                                <td>${data.approvedBy}</td>
+                            </tr>
+                        </table>
+
+                        <h2 style="margin-top: 40px;">DISTRIBUTION LIST</h2>
+                        <p>This document is distributed to the following stakeholders:</p>
+                        <ul>
+                            <li>All staff members in ${data.department}</li>
+                            <li>Quality Assurance Team</li>
+                            <li>Management Team</li>
+                            <li>Document Control Administrator</li>
+                        </ul>
+                    </div>
+
+                    <!-- TABLE OF CONTENTS PAGE -->
+                    <div class="toc-page">
+                        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 40px;">TABLE OF CONTENTS</h1>
+                        <ul class="toc-list">
+                            <li>1. PURPOSE</li>
+                            <li>2. SCOPE</li>
+                            <li>3. RESPONSIBILITIES</li>
+                            <li>4. PROCEDURE</li>
+                            ${steps.map((step, index) => `<li style="margin-left: 20px;">4.${step.number} ${step.title}</li>`).join('')}
+                            <li>5. SAFETY CONSIDERATIONS</li>
+                            <li>6. QUALITY CONTROLS</li>
+                            <li>7. REFERENCES</li>
+                        </ul>
+                    </div>
+
+                    <!-- MAIN CONTENT -->
+                    <div class="content-page">
+                        <div class="section-header">1. PURPOSE</div>
+                        <p>${data.purpose}</p>
+
+                        <div class="section-header">2. SCOPE</div>
+                        <p>${data.scope}</p>
+
+                        <div class="section-header">3. RESPONSIBILITIES</div>
+                        <p>${data.responsibilities}</p>
+
+                        <div class="section-header">4. PROCEDURE</div>
+                        ${steps.map(step => `
+                            <div class="step">
+                                <div class="step-title">4.${step.number} ${step.title}</div>
+                                <div>${step.description}</div>
+                            </div>
+                        `).join('')}
+
+                        ${data.safety ? `
+                            <div class="section-header">5. SAFETY CONSIDERATIONS</div>
+                            <p>${data.safety}</p>
+                        ` : ''}
+
+                        ${data.quality ? `
+                            <div class="section-header">6. QUALITY CONTROLS</div>
+                            <p>${data.quality}</p>
+                        ` : ''}
+
+                        ${data.references ? `
+                            <div class="section-header">7. REFERENCES</div>
+                            <p>${data.references}</p>
+                        ` : ''}
+
+                        <div class="footer">
+                            <p>© ${new Date().getFullYear()} ${data.companyName} | Generated on ${new Date().toLocaleDateString()} | This document is controlled and any printed copies are uncontrolled</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([htmlContent], { type: 'application/msword' });
+            const fileName = `${data.sopCode}_${data.sopTitle.replace(/[^a-zA-Z0-9]/g, '_')}_v${data.version}_Professional.doc`;
+            saveAs(blob, fileName);
+        }
+
+        async function createProfessionalDOCX(data, steps) {
+            try {
+                const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, 
+                        PageBreak, TabStopPosition, TabStopType, Table, TableRow, TableCell,
+                        BorderStyle, VerticalAlign, WidthType, TableLayout } = docx;
+
+                // Create sections array
+                const sections = [];
+                
+                // TITLE PAGE SECTION
+                const titlePageChildren = [
+                    // Company Logo placeholder (if we had logo as image)
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: data.companyName,
+                                bold: true,
+                                size: 48,
+                                color: "2C3E50"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 2000, after: 1000 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "STANDARD OPERATING PROCEDURE",
+                                bold: true,
+                                size: 32,
+                                color: "3498DB"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 800 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: data.sopTitle,
+                                bold: true,
+                                size: 36,
+                                color: "2C3E50"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 1200 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Document ID: ${data.sopCode}`,
+                                size: 24,
+                                color: "7F8C8D"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Version: ${data.version}`,
+                                size: 24,
+                                color: "7F8C8D"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Department: ${data.department}`,
+                                size: 24,
+                                color: "7F8C8D"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 2000 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Effective Date: ${data.effectiveDate}`,
+                                size: 20
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 200 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Review Date: ${data.reviewDate}`,
+                                size: 20
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 200 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Approved By: ${data.approvedBy}`,
+                                size: 20,
+                                bold: true
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    })
+                ];
+
+                // VERSION CONTROL PAGE SECTION
+                const versionControlChildren = [
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "DOCUMENT CONTROL AND VERSION HISTORY",
+                                bold: true,
+                                size: 28,
+                                color: "2C3E50"
+                            })
+                        ],
+                        heading: HeadingLevel.HEADING_1,
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 400, after: 800 }
+                    }),
+                    
+                    // Document Information Table
+                    new Table({
+                        width: {
+                            size: 100,
+                            type: WidthType.PERCENTAGE,
+                        },
+                        layout: TableLayout.AUTOFIT,
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Document Title", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" },
+                                        width: { size: 30, type: WidthType.PERCENTAGE }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.sopTitle)],
+                                        })],
+                                        width: { size: 70, type: WidthType.PERCENTAGE }
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Document ID", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.sopCode)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Department", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.department)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Version", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.version)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Effective Date", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.effectiveDate)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Review Date", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.reviewDate)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Approved By", bold: true })],
+                                        })],
+                                        shading: { fill: "F8F9FA" }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.approvedBy)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                        ],
+                    }),
+                    
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "VERSION HISTORY",
+                                bold: true,
+                                size: 24,
+                                color: "2C3E50"
+                            })
+                        ],
+                        spacing: { before: 800, after: 400 }
+                    }),
+                    
+                    // Version History Table
+                    new Table({
+                        width: {
+                            size: 100,
+                            type: WidthType.PERCENTAGE,
+                        },
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Version", bold: true })],
+                                        })],
+                                        shading: { fill: "3498DB" },
+                                        width: { size: 15, type: WidthType.PERCENTAGE }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Date", bold: true })],
+                                        })],
+                                        shading: { fill: "3498DB" },
+                                        width: { size: 20, type: WidthType.PERCENTAGE }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Changes Made", bold: true })],
+                                        })],
+                                        shading: { fill: "3498DB" },
+                                        width: { size: 45, type: WidthType.PERCENTAGE }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun({ text: "Approved By", bold: true })],
+                                        })],
+                                        shading: { fill: "3498DB" },
+                                        width: { size: 20, type: WidthType.PERCENTAGE }
+                                    }),
+                                ],
+                            }),
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.version)],
+                                        })],
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.effectiveDate)],
+                                        })],
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun("Initial version of the document")],
+                                        })],
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({
+                                            children: [new TextRun(data.approvedBy)],
+                                        })],
+                                    }),
+                                ],
+                            }),
+                        ],
+                    }),
+
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "DISTRIBUTION LIST",
+                                bold: true,
+                                size: 24,
+                                color: "2C3E50"
+                            })
+                        ],
+                        spacing: { before: 800, after: 400 }
+                    }),
+
+                    new Paragraph({
+                        children: [
+                            new TextRun("This document is distributed to the following stakeholders:")
+                        ],
+                        spacing: { after: 200 }
+                    }),
+
+                    new Paragraph({
+                        children: [
+                            new TextRun("• All staff members in " + data.department)
+                        ],
+                        spacing: { after: 100 }
+                    }),
+
+                    new Paragraph({
+                        children: [
+                            new TextRun("• Quality Assurance Team")
+                        ],
+                        spacing: { after: 100 }
+                    }),
+
+                    new Paragraph({
+                        children: [
+                            new TextRun("• Management Team")
+                        ],
+                        spacing: { after: 100 }
+                    }),
+
+                    new Paragraph({
+                        children: [
+                            new TextRun("• Document Control Administrator")
+                        ],
+                        spacing: { after: 400 }
+                    })
+                ];
+
+                // TABLE OF CONTENTS PAGE
+                const tocChildren = [
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "TABLE OF CONTENTS",
+                                bold: true,
+                                size: 28,
+                                color: "2C3E50"
+                            })
+                        ],
+                        heading: HeadingLevel.HEADING_1,
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 400, after: 800 }
+                    })
+                ];
+
+                // TOC entries with proper spacing
+                const tocItems = [
+                    { title: "1. PURPOSE", page: "4" },
+                    { title: "2. SCOPE", page: "4" },
+                    { title: "3. RESPONSIBILITIES", page: "5" },
+                    { title: "4. PROCEDURE", page: "5" },
+                ];
+
+                // Add procedure steps to TOC
+                steps.forEach(step => {
+                    tocItems.push({
+                        title: `   4.${step.number} ${step.title}`,
+                        page: "6"
+                    });
+                });
+
+                if (data.safety) {
+                    tocItems.push({ title: "5. SAFETY CONSIDERATIONS", page: "7" });
+                }
+                if (data.quality) {
+                    tocItems.push({ title: "6. QUALITY CONTROLS", page: "8" });
+                }
+                if (data.references) {
+                    tocItems.push({ title: "7. REFERENCES", page: "8" });
+                }
+
+                // Create TOC entries
+                tocItems.forEach(item => {
+                    tocChildren.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: item.title,
+                                    size: 22
+                                }),
+                                new TextRun({
+                                    text: "\t" + item.page,
+                                    size: 22
+                                })
+                            ],
+                            spacing: { after: 200 },
+                            tabStops: [
+                                {
+                                    type: TabStopType.RIGHT,
+                                    position: 8500
+                                }
+                            ]
+                        })
+                    );
+                });
+
+                // MAIN CONTENT SECTIONS
+                const mainContentChildren = [
+                    // Purpose Section
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "1. PURPOSE",
+                                bold: true,
+                                size: 24,
+                                color: "2C3E50"
+                            })
+                        ],
+                        heading: HeadingLevel.HEADING_1,
+                        spacing: { before: 400, after: 400 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [new TextRun(data.purpose)],
+                        spacing: { after: 600 }
+                    }),
+
+                    // Scope Section
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "2. SCOPE",
+                                bold: true,
+                                size: 24,
+                                color: "2C3E50"
+                            })
+                        ],
+                        heading: HeadingLevel.HEADING_1,
+                        spacing: { before: 400, after: 400 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [new TextRun(data.scope)],
+                        spacing: { after: 600 }
+                    }),
+
+                    // Responsibilities Section
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "3. RESPONSIBILITIES",
+                                bold: true,
+                                size: 24,
+                                color: "2C3E50"
+                            })
+                        ],
+                        heading: HeadingLevel.HEADING_1,
+                        spacing: { before: 400, after: 400 }
+                    }),
+                    
+                    new Paragraph({
+                        children: [new TextRun(data.responsibilities)],
+                        spacing: { after: 600 }
+                    }),
+
+                    // Procedure Section
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "4. PROCEDURE",
+                                bold: true,
+                                size: 24,
+                                color: "2C3E50"
+                            })
+                        ],
+                        heading: HeadingLevel.HEADING_1,
+                        spacing: { before: 400, after: 600 }
+                    })
+                ];
+
+                // Add procedure steps
+                steps.forEach((step, index) => {
+                    mainContentChildren.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `4.${step.number} ${step.title}`,
+                                    bold: true,
+                                    size: 20,
+                                    color: "3498DB"
+                                })
+                            ],
+                            heading: HeadingLevel.HEADING_2,
+                            spacing: { before: 400, after: 300 }
+                        }),
+                        
+                        new Paragraph({
+                            children: [new TextRun(step.description)],
+                            spacing: { after: 400 }
+                        })
+                    );
+                });
+
+                // Additional sections
+                if (data.safety) {
+                    mainContentChildren.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "5. SAFETY CONSIDERATIONS",
+                                    bold: true,
+                                    size: 24,
+                                    color: "2C3E50"
+                                })
+                            ],
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 600, after: 400 }
+                        }),
+                        
+                        new Paragraph({
+                            children: [new TextRun(data.safety)],
+                            spacing: { after: 600 }
+                        })
+                    );
+                }
+
+                if (data.quality) {
+                    mainContentChildren.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "6. QUALITY CONTROLS",
+                                    bold: true,
+                                    size: 24,
+                                    color: "2C3E50"
+                                })
+                            ],
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 600, after: 400 }
+                        }),
+                        
+                        new Paragraph({
+                            children: [new TextRun(data.quality)],
+                            spacing: { after: 600 }
+                        })
+                    );
+                }
+
+                if (data.references) {
+                    mainContentChildren.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "7. REFERENCES",
+                                    bold: true,
+                                    size: 24,
+                                    color: "2C3E50"
+                                })
+                            ],
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 600, after: 400 }
+                        }),
+                        
+                        new Paragraph({
+                            children: [new TextRun(data.references)],
+                            spacing: { after: 600 }
+                        })
+                    );
+                }
+
+                // Footer
+                mainContentChildren.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `© ${new Date().getFullYear()} ${data.companyName} | Generated on ${new Date().toLocaleDateString()} | This document is controlled and any printed copies are uncontrolled`,
+                                size: 16,
+                                color: "7F8C8D"
+                            })
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 800 }
+                    })
+                );
+
+                // Create the document with all sections
+                const doc = new Document({
+                    sections: [
+                        {
+                            properties: {
+                                page: {
+                                    margin: {
+                                        top: 1440,    // 1 inch
+                                        right: 1440,
+                                        bottom: 1440,
+                                        left: 1440,
+                                    },
+                                },
+                            },
+                            children: titlePageChildren
+                        },
+                        {
+                            properties: {
+                                page: {
+                                    margin: {
+                                        top: 1440,
+                                        right: 1440,
+                                        bottom: 1440,
+                                        left: 1440,
+                                    },
+                                },
+                            },
+                            children: versionControlChildren
+                        },
+                        {
+                            properties: {
+                                page: {
+                                    margin: {
+                                        top: 1440,
+                                        right: 1440,
+                                        bottom: 1440,
+                                        left: 1440,
+                                    },
+                                },
+                            },
+                            children: tocChildren
+                        },
+                        {
+                            properties: {
+                                page: {
+                                    margin: {
+                                        top: 1440,
+                                        right: 1440,
+                                        bottom: 1440,
+                                        left: 1440,
+                                    },
+                                },
+                            },
+                            children: mainContentChildren
+                        }
+                    ]
+                });
+
+                // Generate and save the document
+                const buffer = await Packer.toBlob(doc);
+                const fileName = `${data.sopCode}_${data.sopTitle.replace(/[^a-zA-Z0-9]/g, '_')}_v${data.version}_Professional.docx`;
+                saveAs(buffer, fileName);
+
+            } catch (error) {
+                console.error('Professional DOCX creation error:', error);
+                throw error;
+            }
+        }
+
+        function generatePDF() {
+            if (!sopData) {
+                showStatus('Please generate preview first!', 'error');
+                return;
+            }
+
+            const content = document.getElementById('sopPreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>${sopData.data.sopTitle} - ${sopData.data.sopCode}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                            .sop-document { background: white; }
+                            .doc-header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                            .doc-content { padding: 0; }
+                            .doc-footer { background: #ecf0f1; padding: 15px; text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 30px; }
+                            .logo-preview { max-width: 100px; max-height: 60px; object-fit: contain; }
+                            .toc { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #3498db; }
+                            .version-history { background: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107; margin: 20px 0; }
+                            table { border-collapse: collapse; width: 100%; }
+                            td { padding: 8px; border: 1px solid #ddd; }
+                            h1, h2, h3, h4 { color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
+                            @page { margin: 1in; }
+                        </style>
+                    </head>
+                    <body>${content}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function createSOPDocument(data, steps) {
+            const currentDate = new Date().toLocaleDateString();
+            const toc = generateTOC(steps);
+            
+            return `
+                <div class="sop-document">
+                    <div class="doc-header">
+                        <div>
+                            ${logoData ? `<img src="${logoData}" class="logo-preview" alt="Company Logo">` : ''}
+                        </div>
+                        <div style="text-align: right;">
+                            <h2>${data.sopTitle}</h2>
+                            <p>SOP ID: ${data.sopCode}</p>
+                            <p>Version: ${data.version}</p>
+                        </div>
+                    </div>
+
+                    <div class="doc-content">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1>${data.sopTitle}</h1>
+                            <h3>${data.companyName}</h3>
+                            <p><strong>Department:</strong> ${data.department}</p>
+                        </div>
+
+                        <div class="version-history">
+                            <h4>📋 Document Information</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>SOP Code:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.sopCode}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Version:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.version}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Effective Date:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.effectiveDate}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Review Date:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.reviewDate}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Approved By:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.approvedBy}</td></tr>
+                            </table>
+                        </div>
+
+                        ${toc}
+
+                        <h3>🎯 1. Purpose</h3>
+                        <p>${data.purpose}</p>
+
+                        <h3>📏 2. Scope</h3>
+                        <p>${data.scope}</p>
+
+                        <h3>👥 3. Responsibilities</h3>
+                        <p>${data.responsibilities}</p>
+
+                        <h3>⚙️ 4. Procedure</h3>
+                        ${steps.map(step => `
+                            <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa;">
+                                <h4>Step ${step.number}: ${step.title}</h4>
+                                <p>${step.description}</p>
+                            </div>
+                        `).join('')}
+
+                        ${data.safety ? `
+                            <h3>⚠️ 5. Safety Considerations</h3>
+                            <p>${data.safety}</p>
+                        ` : ''}
+
+                        ${data.quality ? `
+                            <h3>✅ 6. Quality Controls</h3>
+                            <p>${data.quality}</p>
+                        ` : ''}
+
+                        ${data.references ? `
+                            <h3>📚 7. References</h3>
+                            <p>${data.references}</p>
+                        ` : ''}
+                    </div>
+
+                    <div class="doc-footer">
+                        <p>© ${new Date().getFullYear()} ${data.companyName} | Generated on ${currentDate} | This document is controlled and any printed copies are uncontrolled</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTOC(steps) {
+            return `
+                <div class="toc">
+                    <h3>📑 Table of Contents</h3>
+                    <ul>
+                        <li>1. Purpose</li>
+                        <li>2. Scope</li>
+                        <li>3. Responsibilities</li>
+                        <li>4. Procedure
+                            <ul style="margin-left: 20px;">
+                                ${steps.map(step => `<li>Step ${step.number}: ${step.title}</li>`).join('')}
+                            </ul>
+                        </li>
+                        <li>5. Safety Considerations</li>
+                        <li>6. Quality Controls</li>
+                        <li>7. References</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type === 'error' ? 'error' : ''}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 4000);
+        }
+
+        // Set default dates
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+            
+            document.getElementById('effectiveDate').value = today.toISOString().split('T')[0];
+            document.getElementById('reviewDate').value = nextYear.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Directory Team Handover Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2980b9 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .export-options {
+            background: #34495e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .export-btn.docx {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 30px;
+            border-right: 1px solid #eee;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .preview-section {
+            flex: 1;
+            padding: 20px;
+            background: #f8f9fa;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .logo-upload {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logo-upload:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .logo-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .team-container, .incident-container, .change-container, .task-container {
+            margin-bottom: 20px;
+        }
+
+        .team-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .incident-header {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .change-header {
+            background: #f39c12;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-header {
+            background: #9b59b6;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .incident-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .change-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #f39c12;
+        }
+
+        .task-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #9b59b6;
+        }
+
+        .add-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .handover-document {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .doc-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-content {
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .doc-footer {
+            background: #ecf0f1;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .logo-preview {
+            max-width: 100px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        .shift-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+
+        .status-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checklist {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .checklist label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .checklist input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .ad-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .status-card h4 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Active Directory Team Handover</h1>
+            <p>Professional handover documentation for AD Operations Team</p>
+        </div>
+
+        <div class="export-options">
+            <button class="export-btn docx" onclick="generateDOCX()" id="docxBtn">
+                Download DOCX
+            </button>
+            <button class="export-btn" onclick="generatePDF()" id="pdfBtn">
+                Print/PDF
+            </button>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>AD Team Handover Details</h2>
+                
+                <div class="form-group">
+                    <label>Company Logo</label>
+                    <div class="logo-upload" onclick="document.getElementById('logoInput').click()">
+                        <input type="file" id="logoInput" accept="image/*">
+                        <p id="logoText">Click to upload company logo</p>
+                        <img id="logoPreview" style="display: none; max-width: 100px; margin-top: 10px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Department/Organization</label>
+                    <input type="text" id="companyName" placeholder="Enter department/organization name" value="IT Operations - Active Directory Team">
+                </div>
+
+                <div class="section">
+                    <h3>Handover Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="handoverDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Shift/Period</label>
+                            <select id="shiftType">
+                                <option value="Business Hours (8AM-6PM)">Business Hours (8AM-6PM)</option>
+                                <option value="Extended Hours (8AM-8PM)">Extended Hours (8AM-8PM)</option>
+                                <option value="Night Support (6PM-8AM)">Night Support (6PM-8AM)</option>
+                                <option value="Weekend Coverage">Weekend Coverage</option>
+                                <option value="On-Call Period">On-Call Period</option>
+                                <option value="Project Period">Project Period</option>
+                                <option value="Custom">Custom</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Outgoing Team Lead/Admin</label>
+                            <input type="text" id="outgoingSupervisor" placeholder="Name, role, and contact" value="John Smith - Senior AD Admin - ext.1234">
+                        </div>
+                        <div class="form-group">
+                            <label>Incoming Team Lead/Admin</label>
+                            <input type="text" id="incomingSupervisor" placeholder="Name, role, and contact" value="Sarah Johnson - AD Admin - ext.5678">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Team Members & Coverage</h3>
+                    <div id="teamContainer">
+                        <div class="team-container">
+                            <div class="team-header">
+                                Team Member 1
+                                <button type="button" class="remove-btn" onclick="removeTeamMember(this)">Remove</button>
+                            </div>
+                            <div class="team-content">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" placeholder="Full name" class="team-name" value="John Smith">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Role</label>
+                                        <input type="text" placeholder="Role/Title" class="team-role" value="Senior AD Administrator">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Contact</label>
+                                        <input type="text" placeholder="Phone/Email/Extension" class="team-contact" value="ext.1234 / john.smith@company.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="team-status">
+                                            <option value="On Duty">On Duty</option>
+                                            <option value="Off Duty">Off Duty</option>
+                                            <option value="On Call">On Call</option>
+                                            <option value="On Leave">On Leave</option>
+                                            <option value="Training">Training</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <textarea placeholder="Current activities, responsibilities, or notes" class="team-notes">Responsible for domain controller monitoring and user account management for East region.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addTeamMember()">+ Add Team Member</button>
+                </div>
+
+                <div class="section">
+                    <h3>Active Directory Health Status</h3>
+                    <div class="form-group">
+                        <label>Overall AD Environment Status</label>
+                        <select id="systemStatus">
+                            <option value="🟢 All Systems Operational">🟢 All Systems Operational</option>
+                            <option value="🟡 Minor Issues (Monitoring)">🟡 Minor Issues (Monitoring)</option>
+                            <option value="🟠 Significant Issues (Action Required)">🟠 Significant Issues (Action Required)</option>
+                            <option value="🔴 Critical Issues (Immediate Action)">🔴 Critical Issues (Immediate Action)</option>
+                        </select>
+                    </div>
+
+                    <div class="ad-status-grid">
+                        <div class="status-card">
+                            <h4>Domain Controllers</h4>
+                            <select id="dcStatus" style="width: 100%; margin-top: 8px;">
+                                <option value="🟢 All DCs Online">🟢 All DCs Online</option>
+                                <option value="🟡 1 DC Offline">🟡 1 DC Offline</option>
+                                <option value="🟠 Multiple DCs Issues">🟠 Multiple DCs Issues</option>
+                                <option value="🔴 Critical DC Failure">🔴 Critical DC Failure</option>
+                            </select>
+                        </div>
+                        <div class="status-card">
+                            <h4>Replication</h4>
+                            <select id="replicationStatus" style="width: 100%; margin-top: 8px;">
+                                <option value="🟢 Healthy">🟢 Healthy</option>
+                                <option value="🟡 Minor Delays">🟡 Minor Delays</option>
+                                <option value="🟠 Replication Issues">🟠 Replication Issues</option>
+                                <option value="🔴 Replication Failure">🔴 Replication Failure</option>
+                            </select>
+                        </div>
+                        <div class="status-card">
+                            <h4>DNS</h4>
+                            <select id="dnsStatus" style="width: 100%; margin-top: 8px;">
+                                <option value="🟢 Operational">🟢 Operational</option>
+                                <option value="🟡 Minor Issues">🟡 Minor Issues</option>
+                                <option value="🟠 DNS Problems">🟠 DNS Problems</option>
+                                <option value="🔴 DNS Failure">🔴 DNS Failure</option>
+                            </select>
+                        </div>
+                        <div class="status-card">
+                            <h4>FSMO Roles</h4>
+                            <select id="fsmoStatus" style="width: 100%; margin-top: 8px;">
+                                <option value="🟢 All Roles Online">🟢 All Roles Online</option>
+                                <option value="🟡 Role Transfer Needed">🟡 Role Transfer Needed</option>
+                                <option value="🟠 FSMO Issues">🟠 FSMO Issues</option>
+                                <option value="🔴 Role Seizure Required">🔴 Role Seizure Required</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Monitoring & Alerts</label>
+                        <textarea id="currentMonitoring" placeholder="Active alerts, monitoring status, automated processes">All domain controllers responding normally. SCOM alerts clear. Daily backup verification completed. No failed logon alerts in past 24 hours.</textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Active Incidents</h3>
+                    <div id="incidentsContainer">
+                        <div class="incident-container">
+                            <div class="incident-header">
+                                Incident 1
+                                <button type="button" class="remove-btn" onclick="removeIncident(this)">Remove</button>
+                            </div>
+                            <div class="incident-content">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Incident ID</label>
+                                        <input type="text" placeholder="Ticket/Incident number" class="incident-id" value="INC0012345">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Priority</label>
+                                        <select class="incident-priority">
+                                            <option value="🔴 Critical">🔴 Critical</option>
+                                            <option value="🟠 High" selected>🟠 High</option>
+                                            <option value="🟡 Medium">🟡 Medium</option>
+                                            <option value="🟢 Low">🟢 Low</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="text" placeholder="Incident title/summary" class="incident-title" value="DC03 High CPU Utilization">
+                                <textarea placeholder="Incident description, impact, actions taken, current status" class="incident-description">DC03 showing sustained 85% CPU usage since 2 PM. Preliminary investigation shows increased authentication requests from web servers. Monitoring closely. No user impact reported yet. Considering restart during maintenance window.</textarea>
+                                <div class="form-row" style="margin-top: 10px;">
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="incident-status">
+                                            <option value="🔄 In Progress" selected>🔄 In Progress</option>
+                                            <option value="⏸️ On Hold">⏸️ On Hold</option>
+                                            <option value="✅ Resolved">✅ Resolved</option>
+                                            <option value="🔍 Under Investigation">🔍 Under Investigation</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Assigned To</label>
+                                        <input type="text" placeholder="Team member responsible" class="incident-assignee" value="John Smith">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addIncident()">+ Add Incident</button>
+                </div>
+
+                <div class="section">
+                    <h3>Change Requests & Scheduled Changes</h3>
+                    <div id="changesContainer">
+                        <div class="change-container">
+                            <div class="change-header">
+                                Change 1
+                                <button type="button" class="remove-btn" onclick="removeChange(this)">Remove</button>
+                            </div>
+                            <div class="change-content">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Change ID</label>
+                                        <input type="text" placeholder="Change request number" class="change-id" value="CHG0067890">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Risk Level</label>
+                                        <select class="change-risk">
+                                            <option value="🟢 Low Risk">🟢 Low Risk</option>
+                                            <option value="🟡 Medium Risk" selected>🟡 Medium Risk</option>
+                                            <option value="🟠 High Risk">🟠 High Risk</option>
+                                            <option value="🔴 Emergency Change">🔴 Emergency Change</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="text" placeholder="Change title/summary" class="change-title" value="Group Policy Update - Password Policy">
+                                <textarea placeholder="Change description, implementation plan, rollback plan" class="change-description">Update default domain password policy to increase minimum length to 12 characters. Scheduled for implementation Sunday 2 AM during maintenance window. Rollback plan documented. Testing completed in lab environment.</textarea>
+                                <div class="form-row" style="margin-top: 10px;">
+                                    <div class="form-group">
+                                        <label>Scheduled Date/Time</label>
+                                        <input type="datetime-local" class="change-datetime">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Implementation Status</label>
+                                        <select class="change-status">
+                                            <option value="📋 Approved - Scheduled">📋 Approved - Scheduled</option>
+                                            <option value="🔄 In Progress" selected>🔄 In Progress</option>
+                                            <option value="✅ Implemented">✅ Implemented</option>
+                                            <option value="⏸️ On Hold">⏸️ On Hold</option>
+                                            <option value="❌ Cancelled">❌ Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addChange()">+ Add Change Request</button>
+                </div>
+
+                <div class="section">
+                    <h3>Service Requests & Tasks</h3>
+                    <div id="tasksContainer">
+                        <div class="task-container">
+                            <div class="task-header">
+                                Task 1
+                                <button type="button" class="remove-btn" onclick="removeTask(this)">Remove</button>
+                            </div>
+                            <div class="task-content">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Request ID</label>
+                                        <input type="text" placeholder="Service request number" class="task-id" value="REQ0045678">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Type</label>
+                                        <select class="task-type">
+                                            <option value="User Account">User Account</option>
+                                            <option value="Group Management">Group Management</option>
+                                            <option value="Computer Account">Computer Account</option>
+                                            <option value="OU Management">OU Management</option>
+                                            <option value="Security Group">Security Group</option>
+                                            <option value="Password Reset" selected>Password Reset</option>
+                                            <option value="Access Review">Access Review</option>
+                                            <option value="Maintenance">Maintenance</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="text" placeholder="Task title" class="task-title" value="New User Account Creation - Finance Dept">
+                                <textarea placeholder="Task description, requirements, and current status" class="task-description">Create AD account for new hire Jane Doe in Finance department. Requires access to Finance-Users group and appropriate OUs. Manager approval received. Account template ready for deployment.</textarea>
+                                <div class="form-row" style="margin-top: 10px;">
+                                    <div class="form-group">
+                                        <label>Due Date/Time</label>
+                                        <input type="datetime-local" class="task-deadline">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Assigned To</label>
+                                        <input type="text" class="task-assignee" placeholder="Team member responsible" value="Sarah Johnson">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addTask()">+ Add Service Request/Task</button>
+                </div>
+
+                <div class="section">
+                    <h3>Recent Activities & Notes</h3>
+                    <div class="form-group">
+                        <label>Completed Activities (Last 24 Hours)</label>
+                        <textarea id="recentActivities" placeholder="Recent completed tasks, maintenance, updates, or significant activities">- Completed monthly AD health check&#10;- Applied security patches to DC02&#10;- Cleaned up disabled user accounts (25 accounts removed)&#10;- Updated backup domain admin group membership&#10;- Resolved replication issue between DC01 and DC04</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Important Notes & Communications</label>
+                        <textarea id="keyNotes" placeholder="Important information for the incoming team">- New security policy takes effect Monday - all service accounts must have 25+ char passwords&#10;- Planned maintenance window this weekend (Sat 11 PM - Sun 5 AM)&#10;- Audit team requesting access logs for Q3 review next week&#10;- New DC deployment project kickoff meeting Tuesday 10 AM</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Security Concerns & Alerts</label>
+                        <textarea id="securityNotes" placeholder="Any security issues, alerts, or concerns">No active security concerns. Last security scan completed yesterday with no critical findings. Password spray detection is active and configured. All admin accounts using MFA.</textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>AD Operations Checklist</h3>
+                    <div class="checklist">
+                        <label><input type="checkbox" id="check1"> Domain controller health verified</label>
+                        <label><input type="checkbox" id="check2"> AD replication status confirmed</label>
+                        <label><input type="checkbox" id="check3"> DNS functionality validated</label>
+                        <label><input type="checkbox" id="check4"> FSMO role holders confirmed</label>
+                        <label><input type="checkbox" id="check5"> Active incidents documented</label>
+                        <label><input type="checkbox" id="check6"> Scheduled changes reviewed</label>
+                        <label><input type="checkbox" id="check7"> Service requests status updated</label>
+                        <label><input type="checkbox" id="check8"> Monitoring alerts reviewed</label>
+                        <label><input type="checkbox" id="check9"> Backup status verified</label>
+                        <label><input type="checkbox" id="check10"> Security events reviewed</label>
+                        <label><input type="checkbox" id="check11"> Team member statuses confirmed</label>
+                        <label><input type="checkbox" id="check12"> On-call information updated</label>
+                    </div>
+                </div>
+
+                <button class="generate-btn" onclick="generatePreview()">Generate AD Team Handover</button>
+            </div>
+
+            <div class="preview-section">
+                <div id="handoverPreview">
+                    <p style="text-align: center; color: #7f8c8d; margin-top: 50px;">
+                        Fill out the form and click "Generate AD Team Handover" to see the preview
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
+
+    <script>
+        let logoData = '';
+        let teamCounter = 1;
+        let incidentCounter = 1;
+        let changeCounter = 1;
+        let taskCounter = 1;
+        let handoverData = null;
+
+        // Logo upload handler
+        document.getElementById('logoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoData = e.target.result;
+                    const preview = document.getElementById('logoPreview');
+                    const text = document.getElementById('logoText');
+                    preview.src = logoData;
+                    preview.style.display = 'block';
+                    text.textContent = 'Logo uploaded successfully!';
+                    showStatus('Logo uploaded successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addTeamMember() {
+            teamCounter++;
+            const container = document.getElementById('teamContainer');
+            const teamDiv = document.createElement('div');
+            teamDiv.className = 'team-container';
+            teamDiv.innerHTML = `
+                <div class="team-header">
+                    Team Member ${teamCounter}
+                    <button type="button" class="remove-btn" onclick="removeTeamMember(this)">Remove</button>
+                </div>
+                <div class="team-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" placeholder="Full name" class="team-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label>
+                            <input type="text" placeholder="Role/Title" class="team-role">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact</label>
+                            <input type="text" placeholder="Phone/Email/Extension" class="team-contact">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="team-status">
+                                <option value="On Duty">On Duty</option>
+                                <option value="Off Duty" selected>Off Duty</option>
+                                <option value="On Call">On Call</option>
+                                <option value="On Leave">On Leave</option>
+                                <option value="Training">Training</option>
+                            </select>
+                        </div>
+                    </div>
+                    <textarea placeholder="Current activities, responsibilities, or notes" class="team-notes"></textarea>
+                </div>
+            `;
+            container.appendChild(teamDiv);
+        }
+
+        function removeTeamMember(button) {
+            button.closest('.team-container').remove();
+            updateTeamNumbers();
+        }
+
+        function updateTeamNumbers() {
+            const teams = document.querySelectorAll('.team-header');
+            teams.forEach((team, index) => {
+                team.firstChild.textContent = `Team Member ${index + 1}`;
+            });
+            teamCounter = teams.length;
+        }
+
+        function addIncident() {
+            incidentCounter++;
+            const container = document.getElementById('incidentsContainer');
+            const incidentDiv = document.createElement('div');
+            incidentDiv.className = 'incident-container';
+            incidentDiv.innerHTML = `
+                <div class="incident-header">
+                    Incident ${incidentCounter}
+                    <button type="button" class="remove-btn" onclick="removeIncident(this)">Remove</button>
+                </div>
+                <div class="incident-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Incident ID</label>
+                            <input type="text" placeholder="Ticket/Incident number" class="incident-id">
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select class="incident-priority">
+                                <option value="🔴 Critical">🔴 Critical</option>
+                                <option value="🟠 High">🟠 High</option>
+                                <option value="🟡 Medium" selected>🟡 Medium</option>
+                                <option value="🟢 Low">🟢 Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="text" placeholder="Incident title/summary" class="incident-title">
+                    <textarea placeholder="Incident description, impact, actions taken, current status" class="incident-description"></textarea>
+                    <div class="form-row" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="incident-status">
+                                <option value="🔄 In Progress" selected>🔄 In Progress</option>
+                                <option value="⏸️ On Hold">⏸️ On Hold</option>
+                                <option value="✅ Resolved">✅ Resolved</option>
+                                <option value="🔍 Under Investigation">🔍 Under Investigation</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned To</label>
+                            <input type="text" placeholder="Team member responsible" class="incident-assignee">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(incidentDiv);
+        }
+
+        function removeIncident(button) {
+            button.closest('.incident-container').remove();
+            updateIncidentNumbers();
+        }
+
+        function updateIncidentNumbers() {
+            const incidents = document.querySelectorAll('.incident-header');
+            incidents.forEach((incident, index) => {
+                incident.firstChild.textContent = `Incident ${index + 1}`;
+            });
+            incidentCounter = incidents.length;
+        }
+
+        function addChange() {
+            changeCounter++;
+            const container = document.getElementById('changesContainer');
+            const changeDiv = document.createElement('div');
+            changeDiv.className = 'change-container';
+            changeDiv.innerHTML = `
+                <div class="change-header">
+                    Change ${changeCounter}
+                    <button type="button" class="remove-btn" onclick="removeChange(this)">Remove</button>
+                </div>
+                <div class="change-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Change ID</label>
+                            <input type="text" placeholder="Change request number" class="change-id">
+                        </div>
+                        <div class="form-group">
+                            <label>Risk Level</label>
+                            <select class="change-risk">
+                                <option value="🟢 Low Risk" selected>🟢 Low Risk</option>
+                                <option value="🟡 Medium Risk">🟡 Medium Risk</option>
+                                <option value="🟠 High Risk">🟠 High Risk</option>
+                                <option value="🔴 Emergency Change">🔴 Emergency Change</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="text" placeholder="Change title/summary" class="change-title">
+                    <textarea placeholder="Change description, implementation plan, rollback plan" class="change-description"></textarea>
+                    <div class="form-row" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <label>Scheduled Date/Time</label>
+                            <input type="datetime-local" class="change-datetime">
+                        </div>
+                        <div class="form-group">
+                            <label>Implementation Status</label>
+                            <select class="change-status">
+                                <option value="📋 Approved - Scheduled" selected>📋 Approved - Scheduled</option>
+                                <option value="🔄 In Progress">🔄 In Progress</option>
+                                <option value="✅ Implemented">✅ Implemented</option>
+                                <option value="⏸️ On Hold">⏸️ On Hold</option>
+                                <option value="❌ Cancelled">❌ Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(changeDiv);
+        }
+
+        function removeChange(button) {
+            button.closest('.change-container').remove();
+            updateChangeNumbers();
+        }
+
+        function updateChangeNumbers() {
+            const changes = document.querySelectorAll('.change-header');
+            changes.forEach((change, index) => {
+                change.firstChild.textContent = `Change ${index + 1}`;
+            });
+            changeCounter = changes.length;
+        }
+
+        function addTask() {
+            taskCounter++;
+            const container = document.getElementById('tasksContainer');
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task-container';
+            taskDiv.innerHTML = `
+                <div class="task-header">
+                    Task ${taskCounter}
+                    <button type="button" class="remove-btn" onclick="removeTask(this)">Remove</button>
+                </div>
+                <div class="task-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Request ID</label>
+                            <input type="text" placeholder="Service request number" class="task-id">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select class="task-type">
+                                <option value="User Account" selected>User Account</option>
+                                <option value="Group Management">Group Management</option>
+                                <option value="Computer Account">Computer Account</option>
+                                <option value="OU Management">OU Management</option>
+                                <option value="Security Group">Security Group</option>
+                                <option value="Password Reset">Password Reset</option>
+                                <option value="Access Review">Access Review</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="text" placeholder="Task title" class="task-title">
+                    <textarea placeholder="Task description, requirements, and current status" class="task-description"></textarea>
+                    <div class="form-row" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <label>Due Date/Time</label>
+                            <input type="datetime-local" class="task-deadline">
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned To</label>
+                            <input type="text" class="task-assignee" placeholder="Team member responsible">
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(taskDiv);
+        }
+
+        function removeTask(button) {
+            button.closest('.task-container').remove();
+            updateTaskNumbers();
+        }
+
+        function updateTaskNumbers() {
+            const tasks = document.querySelectorAll('.task-header');
+            tasks.forEach((task, index) => {
+                task.firstChild.textContent = `Task ${index + 1}`;
+            });
+            taskCounter = tasks.length;
+        }
+
+        function collectHandoverData() {
+            const data = {
+                companyName: document.getElementById('companyName').value,
+                handoverDate: document.getElementById('handoverDate').value,
+                shiftType: document.getElementById('shiftType').value,
+                outgoingSupervisor: document.getElementById('outgoingSupervisor').value,
+                incomingSupervisor: document.getElementById('incomingSupervisor').value,
+                systemStatus: document.getElementById('systemStatus').value,
+                dcStatus: document.getElementById('dcStatus').value,
+                replicationStatus: document.getElementById('replicationStatus').value,
+                dnsStatus: document.getElementById('dnsStatus').value,
+                fsmoStatus: document.getElementById('fsmoStatus').value,
+                currentMonitoring: document.getElementById('currentMonitoring').value,
+                recentActivities: document.getElementById('recentActivities').value,
+                keyNotes: document.getElementById('keyNotes').value,
+                securityNotes: document.getElementById('securityNotes').value
+            };
+
+            // Collect team members
+            const team = [];
+            document.querySelectorAll('.team-container').forEach((member, index) => {
+                const name = member.querySelector('.team-name').value;
+                const role = member.querySelector('.team-role').value;
+                const contact = member.querySelector('.team-contact').value;
+                const status = member.querySelector('.team-status').value;
+                const notes = member.querySelector('.team-notes').value;
+                if (name || role) {
+                    team.push({ name, role, contact, status, notes, number: index + 1 });
+                }
+            });
+
+            // Collect incidents
+            const incidents = [];
+            document.querySelectorAll('.incident-container').forEach((incident, index) => {
+                const id = incident.querySelector('.incident-id').value;
+                const title = incident.querySelector('.incident-title').value;
+                const description = incident.querySelector('.incident-description').value;
+                const priority = incident.querySelector('.incident-priority').value;
+                const status = incident.querySelector('.incident-status').value;
+                const assignee = incident.querySelector('.incident-assignee').value;
+                if (title || description) {
+                    incidents.push({ id, title, description, priority, status, assignee, number: index + 1 });
+                }
+            });
+
+            // Collect changes
+            const changes = [];
+            document.querySelectorAll('.change-container').forEach((change, index) => {
+                const id = change.querySelector('.change-id').value;
+                const title = change.querySelector('.change-title').value;
+                const description = change.querySelector('.change-description').value;
+                const risk = change.querySelector('.change-risk').value;
+                const datetime = change.querySelector('.change-datetime').value;
+                const status = change.querySelector('.change-status').value;
+                if (title || description) {
+                    changes.push({ id, title, description, risk, datetime, status, number: index + 1 });
+                }
+            });
+
+            // Collect tasks
+            const tasks = [];
+            document.querySelectorAll('.task-container').forEach((task, index) => {
+                const id = task.querySelector('.task-id').value;
+                const title = task.querySelector('.task-title').value;
+                const description = task.querySelector('.task-description').value;
+                const type = task.querySelector('.task-type').value;
+                const deadline = task.querySelector('.task-deadline').value;
+                const assignee = task.querySelector('.task-assignee').value;
+                if (title || description) {
+                    tasks.push({ id, title, description, type, deadline, assignee, number: index + 1 });
+                }
+            });
+
+            // Collect checklist
+            const checklist = [];
+            for (let i = 1; i <= 12; i++) {
+                const checkbox = document.getElementById(`check${i}`);
+                if (checkbox) {
+                    checklist.push({
+                        item: checkbox.parentElement.textContent.trim(),
+                        checked: checkbox.checked
+                    });
+                }
+            }
+
+            return { data, team, incidents, changes, tasks, checklist };
+        }
+
+        function generatePreview() {
+            try {
+                const { data, team, incidents, changes, tasks, checklist } = collectHandoverData();
+                handoverData = { data, team, incidents, changes, tasks, checklist };
+                
+                const handoverHTML = createHandoverDocument(data, team, incidents, changes, tasks, checklist);
+                document.getElementById('handoverPreview').innerHTML = handoverHTML;
+                
+                showStatus('AD Team handover document generated successfully! You can now download as DOCX or print as PDF.', 'success');
+            } catch (error) {
+                console.error('Preview generation error:', error);
+                showStatus('Error generating preview: ' + error.message, 'error');
+            }
+        }
+
+        function createHandoverDocument(data, team, incidents, changes, tasks, checklist) {
+            const currentTime = new Date().toLocaleString();
+            
+            return `
+                <div class="handover-document">
+                    <div class="doc-header">
+                        <div>
+                            ${logoData ? `<img src="${logoData}" class="logo-preview" alt="Company Logo">` : ''}
+                        </div>
+                        <div style="text-align: right;">
+                            <h2>Active Directory Team Handover</h2>
+                            <p>Generated: ${currentTime}</p>
+                        </div>
+                    </div>
+
+                    <div class="doc-content">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1>Active Directory Team Handover Report</h1>
+                            <h3>${data.companyName}</h3>
+                        </div>
+
+                        <div class="shift-info">
+                            <h4>Handover Information</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Date:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.handoverDate}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Period:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.shiftType}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Outgoing Lead:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.outgoingSupervisor}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Incoming Lead:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.incomingSupervisor}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Overall Status:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.systemStatus}</td></tr>
+                            </table>
+                        </div>
+
+                        ${team.length > 0 ? `
+                            <h3>Team Members & Coverage</h3>
+                            ${team.map(member => `
+                                <div style="margin: 15px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa;">
+                                    <h4>${member.name} - ${member.role}</h4>
+                                    <p><strong>Contact:</strong> ${member.contact} | <strong>Status:</strong> ${member.status}</p>
+                                    ${member.notes ? `<p><strong>Notes:</strong> ${member.notes}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        ` : ''}
+
+                        <h3>Active Directory Environment Status</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;">
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #3498db;">
+                                <h4>Domain Controllers</h4>
+                                <p>${data.dcStatus}</p>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #3498db;">
+                                <h4>Replication</h4>
+                                <p>${data.replicationStatus}</p>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #3498db;">
+                                <h4>DNS</h4>
+                                <p>${data.dnsStatus}</p>
+                            </div>
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #3498db;">
+                                <h4>FSMO Roles</h4>
+                                <p>${data.fsmoStatus}</p>
+                            </div>
+                        </div>
+                        
+                        <h4>Current Monitoring & Alerts:</h4>
+                        <p>${data.currentMonitoring}</p>
+
+                        ${incidents.length > 0 ? `
+                            <h3>Active Incidents</h3>
+                            ${incidents.map(incident => `
+                                <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #e74c3c; background: #f8f9fa;">
+                                    <h4>Incident ${incident.number}: ${incident.title} (${incident.id || 'No ID'})</h4>
+                                    <p><strong>Priority:</strong> ${incident.priority} | <strong>Status:</strong> ${incident.status} | <strong>Assigned:</strong> ${incident.assignee}</p>
+                                    <p>${incident.description}</p>
+                                </div>
+                            `).join('')}
+                        ` : ''}
+
+                        ${changes.length > 0 ? `
+                            <h3>Change Requests & Scheduled Changes</h3>
+                            ${changes.map(change => `
+                                <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #f39c12; background: #f8f9fa;">
+                                    <h4>Change ${change.number}: ${change.title} (${change.id || 'No ID'})</h4>
+                                    <p><strong>Risk:</strong> ${change.risk} | <strong>Status:</strong> ${change.status}</p>
+                                    ${change.datetime ? `<p><strong>Scheduled:</strong> ${new Date(change.datetime).toLocaleString()}</p>` : ''}
+                                    <p>${change.description}</p>
+                                </div>
+                            `).join('')}
+                        ` : ''}
+
+                        ${tasks.length > 0 ? `
+                            <h3>Service Requests & Tasks</h3>
+                            ${tasks.map(task => `
+                                <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #9b59b6; background: #f8f9fa;">
+                                    <h4>Task ${task.number}: ${task.title} (${task.id || 'No ID'})</h4>
+                                    <p><strong>Type:</strong> ${task.type} | <strong>Assigned:</strong> ${task.assignee}</p>
+                                    ${task.deadline ? `<p><strong>Due:</strong> ${new Date(task.deadline).toLocaleString()}</p>` : ''}
+                                    <p>${task.description}</p>
+                                </div>
+                            `).join('')}
+                        ` : ''}
+
+                        <h3>Recent Activities & Notes</h3>
+                        <h4>Completed Activities (Last 24 Hours):</h4>
+                        <p style="white-space: pre-line;">${data.recentActivities}</p>
+                        
+                        <h4>Important Notes:</h4>
+                        <p style="white-space: pre-line;">${data.keyNotes}</p>
+                        
+                        <h4>Security Concerns & Alerts:</h4>
+                        <p style="white-space: pre-line;">${data.securityNotes}</p>
+
+                        <h3>AD Operations Checklist</h3>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                            ${checklist.map(item => `
+                                <p><span style="color: ${item.checked ? 'green' : 'red'}; font-weight: bold;">${item.checked ? '✅' : '❌'}</span> ${item.item}</p>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="doc-footer">
+                        <p>© ${new Date().getFullYear()} ${data.companyName} | Generated on ${new Date().toLocaleDateString()} | Confidential - Active Directory Operations</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function generateDOCX() {
+            if (!handoverData) {
+                showStatus('Please generate preview first!', 'error');
+                return;
+            }
+
+            const docxBtn = document.getElementById('docxBtn');
+            const originalHTML = docxBtn.innerHTML;
+            docxBtn.innerHTML = '<span class="loading"></span> Generating...';
+            docxBtn.disabled = true;
+
+            try {
+                createWordCompatibleHandover(handoverData.data, handoverData.team, handoverData.incidents, handoverData.changes, handoverData.tasks, handoverData.checklist);
+                showStatus('Word-compatible document downloaded!', 'success');
+            } catch (error) {
+                console.error('Error generating document:', error);
+                showStatus('Error generating document. Please try again.', 'error');
+            }
+
+            docxBtn.innerHTML = originalHTML;
+            docxBtn.disabled = false;
+        }
+
+        function createWordCompatibleHandover(data, team, incidents, changes, tasks, checklist) {
+            const htmlContent = document.getElementById('handoverPreview').innerHTML;
+            const docContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>AD Team Handover - ${data.handoverDate}</title>
+                    <style>
+                        body { font-family: 'Calibri', Arial, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
+                        .handover-document { background: white; }
+                        .doc-header { background: #2c3e50; color: white; padding: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+                        .doc-content { padding: 0; }
+                        .doc-footer { background: #ecf0f1; padding: 15px; text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 30px; }
+                        .logo-preview { max-width: 100px; max-height: 60px; object-fit: contain; }
+                        .shift-info { background: #e8f4f8; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; margin: 20px 0; }
+                        table { border-collapse: collapse; width: 100%; }
+                        td { padding: 8px; border: 1px solid #ddd; }
+                        h1, h2, h3, h4 { color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
+                        @page { margin: 1in; }
+                    </style>
+                </head>
+                <body>${htmlContent}</body>
+                </html>
+            `;
+
+            const blob = new Blob([docContent], { type: 'text/html;charset=utf-8' });
+            const fileName = `AD_Team_Handover_${data.handoverDate}_${data.shiftType.replace(/[^a-zA-Z0-9]/g, '_')}.doc`;
+            saveAs(blob, fileName);
+        }
+
+        function generatePDF() {
+            if (!handoverData) {
+                showStatus('Please generate preview first!', 'error');
+                return;
+            }
+
+            const content = document.getElementById('handoverPreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>AD Team Handover - ${handoverData.data.handoverDate}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                            .handover-document { background: white; }
+                            .doc-header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                            .doc-content { padding: 0; }
+                            .doc-footer { background: #ecf0f1; padding: 15px; text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 30px; }
+                            .logo-preview { max-width: 100px; max-height: 60px; object-fit: contain; }
+                            .shift-info { background: #e8f4f8; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; margin: 20px 0; }
+                            table { border-collapse: collapse; width: 100%; }
+                            td { padding: 8px; border: 1px solid #ddd; }
+                            h1, h2, h3, h4 { color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
+                            @page { margin: 1in; }
+                        </style>
+                    </head>
+                    <body>${content}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type === 'error' ? 'error' : ''}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 4000);
+        }
+
+        // Set default date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            document.getElementById('handoverDate').value = today.toISOString().split('T')[0];
+
+            // Set default task deadline
+            const taskDeadlines = document.querySelectorAll('.task-deadline');
+            if (taskDeadlines.length > 0) {
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(17, 0); // 5 PM default
+                taskDeadlines[0].value = tomorrow.toISOString().slice(0, 16);
+            }
+
+            // Set default change datetime
+            const changeDatetimes = document.querySelectorAll('.change-datetime');
+            if (changeDatetimes.length > 0) {
+                const weekend = new Date(today);
+                weekend.setDate(weekend.getDate() + (6 - weekend.getDay())); // Next Saturday
+                weekend.setHours(2, 0); // 2 AM maintenance window
+                changeDatetimes[0].value = weekend.toISOString().slice(0, 16);
+            }
+        });
+    </script>
+</body>
+</html>

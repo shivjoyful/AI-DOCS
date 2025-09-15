@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical KB Article Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .export-options {
+            background: #34495e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .export-btn.docx {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 30px;
+            border-right: 1px solid #eee;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .preview-section {
+            flex: 1;
+            padding: 20px;
+            background: #f8f9fa;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group textarea.code {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .logo-upload {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logo-upload:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .logo-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .step-container, .solution-container {
+            margin-bottom: 20px;
+        }
+
+        .step-header, .solution-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .solution-header {
+            background: #27ae60;
+        }
+
+        .step-content, .solution-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .solution-content {
+            border-left-color: #27ae60;
+        }
+
+        .add-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .kb-document {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .doc-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-content {
+            padding: 30px;
+            line-height: 1.6;
+        }
+
+        .doc-footer {
+            background: #ecf0f1;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .logo-preview {
+            max-width: 100px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+
+        .article-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+            margin: 20px 0;
+        }
+
+        .problem-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+
+        .solution-section {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+            margin: 20px 0;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .status-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 45px;
+        }
+
+        .tag {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag .remove-tag {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .difficulty-beginner { background: #d4edda; color: #155724; }
+        .difficulty-intermediate { background: #fff3cd; color: #856404; }
+        .difficulty-advanced { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Technical KB Article Creator</h1>
+            <p>Create comprehensive technical knowledge base articles with professional formatting</p>
+        </div>
+
+        <div class="export-options">
+            <button class="export-btn docx" onclick="generateDOCX()" id="docxBtn">
+                📄 Download DOCX
+            </button>
+            <button class="export-btn" onclick="generatePDF()" id="pdfBtn">
+                📋 Print/PDF
+            </button>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>KB Article Details</h2>
+                
+                <div class="form-group">
+                    <label>Company Logo</label>
+                    <div class="logo-upload" onclick="document.getElementById('logoInput').click()">
+                        <input type="file" id="logoInput" accept="image/*">
+                        <p id="logoText">📁 Click to upload company logo</p>
+                        <img id="logoPreview" style="display: none; max-width: 100px; margin-top: 10px;">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Article Information</h3>
+                    <div class="form-group">
+                        <label>Article Title</label>
+                        <input type="text" id="articleTitle" placeholder="Enter clear, descriptive title" value="Resolving Email Server Connection Timeout Issues">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Article ID</label>
+                            <input type="text" id="articleId" placeholder="KB-001" value="KB-EMAIL-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="category">
+				<option value="Active Directory">Directory Services</option>
+                                <option value="Email Systems">Email Systems</option>
+                                <option value="Network & Connectivity">Network & Connectivity</option>
+                                <option value="Software Installation">Software Installation</option>
+                                <option value="Hardware Issues">Hardware Issues</option>
+                                <option value="Security & Access">Security & Access</option>
+                                <option value="Database & Storage">Database & Storage</option>
+                                <option value="Cloud Services">Cloud Services</option>
+                                <option value="User Management">User Management</option>
+                                <option value="Backup & Recovery">Backup & Recovery</option>
+                                <option value="Performance & Monitoring">Performance & Monitoring</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input type="text" id="author" placeholder="Your name" value="Sarah Thompson, IT Support">
+                        </div>
+                        <div class="form-group">
+                            <label>Reviewer</label>
+                            <input type="text" id="reviewer" placeholder="Reviewer name" value="Mike Chen, Senior Engineer">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Version</label>
+                            <input type="text" id="version" value="1.0">
+                        </div>
+                        <div class="form-group">
+                            <label>Difficulty Level</label>
+                            <select id="difficulty">
+                                <option value="Beginner">🟢 Beginner</option>
+                                <option value="Intermediate" selected>🟡 Intermediate</option>
+                                <option value="Advanced">🔴 Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Keywords/Tags</label>
+                        <input type="text" id="tagsInput" placeholder="Type and press Enter to add tags">
+                        <div id="tagsContainer" class="tags-input">
+                            <div class="tag">email <span class="remove-tag" onclick="removeTag(this)">×</span></div>
+                            <div class="tag">timeout <span class="remove-tag" onclick="removeTag(this)">×</span></div>
+                            <div class="tag">server <span class="remove-tag" onclick="removeTag(this)">×</span></div>
+                            <div class="tag">connectivity <span class="remove-tag" onclick="removeTag(this)">×</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Problem Description</h3>
+                    <div class="form-group">
+                        <label>Problem Summary</label>
+                        <input type="text" id="problemSummary" placeholder="Brief one-line description" value="Users experiencing email connection timeouts and inability to send/receive emails">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Detailed Description</label>
+                        <textarea id="problemDescription" placeholder="Detailed problem description">Users are reporting intermittent connection timeouts when trying to access their email accounts. The issue affects both Outlook desktop clients and webmail access. Users receive timeout errors when attempting to send or receive emails, and the application becomes unresponsive for 30-60 seconds before timing out.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Symptoms</label>
+                        <textarea id="symptoms" placeholder="List observable symptoms">• Email client displays 'Server timeout' error messages&#10;• Long delays (30+ seconds) when checking for new mail&#10;• Outgoing emails stuck in Outbox&#10;• Intermittent connection drops during large file attachments&#10;• Error code: 0x800CCC19 in Outlook</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Affected Systems/Versions</label>
+                        <textarea id="affectedSystems" placeholder="List affected systems, software versions, etc.">• Microsoft Outlook 2019/2021/365&#10;• Exchange Server 2019&#10;• Windows 10/11 clients&#10;• iOS/Android mobile email apps&#10;• Affects approximately 25% of users randomly</textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Root Cause Analysis</h3>
+                    <div class="form-group">
+                        <label>Identified Cause</label>
+                        <textarea id="rootCause" placeholder="Technical explanation of the root cause">The timeout issues are caused by insufficient connection pooling limits on the Exchange server combined with aggressive firewall timeout settings. The firewall is dropping idle connections after 300 seconds, while Outlook maintains longer connection expectations, causing conflict and timeout errors.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Technical Details</label>
+                        <textarea id="technicalDetails" placeholder="In-depth technical information">Exchange connector limits set to default 20 connections per user. Network firewall configured with 5-minute idle timeout. Outlook keep-alive packets not frequent enough to maintain connection state. Load balancer health checks interfering with persistent connections during peak hours (9-11 AM, 2-4 PM).</textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Primary Solution</h3>
+                    <div class="form-group">
+                        <label>Solution Overview</label>
+                        <textarea id="solutionOverview" placeholder="Brief solution summary">Increase Exchange connection limits and adjust firewall timeout settings to prevent premature connection drops. Configure Outlook clients with optimized connection parameters.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prerequisites</label>
+                        <textarea id="prerequisites" placeholder="What's needed before starting">• Administrative access to Exchange server&#10;• Firewall management console access&#10;• Outlook client administrator rights&#10;• Scheduled maintenance window (15-20 minutes)&#10;• Backup of current Exchange settings</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tools Required</label>
+                        <textarea id="toolsRequired" placeholder="Required tools and software">• Exchange Management Console&#10;• PowerShell with Exchange cmdlets&#10;• Network firewall management interface&#10;• Registry Editor (for client-side changes)&#10;• Network monitoring tool (optional)</textarea>
+                    </div>
+
+                    <h4>Solution Steps</h4>
+                    <div id="stepsContainer">
+                        <div class="step-container">
+                            <div class="step-header">
+                                Step 1
+                                <button type="button" class="remove-btn" onclick="removeStep(this)">Remove</button>
+                            </div>
+                            <div class="step-content">
+                                <input type="text" placeholder="Step title" class="step-title" value="Increase Exchange Connection Limits">
+                                <textarea placeholder="Detailed step instructions" class="step-description">Open Exchange Management Console and navigate to Server Configuration > Client Access. Right-click on your Exchange server and select Properties. Go to the 'Limits' tab and increase the maximum connections per user from 20 to 50. Click Apply and restart the Microsoft Exchange Information Store service.</textarea>
+                                <textarea placeholder="Commands/Code (optional)" class="step-code code">Set-ImapSettings -MaxConnectionsPerUser 50
+Set-PopSettings -MaxConnectionsPerUser 50
+Restart-Service MSExchangeIS</textarea>
+                            </div>
+                        </div>
+                        <div class="step-container">
+                            <div class="step-header">
+                                Step 2
+                                <button type="button" class="remove-btn" onclick="removeStep(this)">Remove</button>
+                            </div>
+                            <div class="step-content">
+                                <input type="text" placeholder="Step title" class="step-title" value="Configure Firewall Timeout Settings">
+                                <textarea placeholder="Detailed step instructions" class="step-description">Access the network firewall configuration. Locate the session timeout settings for HTTP/HTTPS traffic. Increase the idle timeout from 300 seconds (5 minutes) to 1200 seconds (20 minutes) for email-related ports (443, 993, 995). Save and apply the configuration changes.</textarea>
+                                <textarea placeholder="Commands/Code (optional)" class="step-code code"># Example firewall commands (varies by vendor)
+set session-timeout 1200
+set protocol tcp port 443 timeout 1200
+set protocol tcp port 993 timeout 1200</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addStep()">+ Add Solution Step</button>
+                </div>
+
+                <div class="section">
+                    <h3>Alternative Solutions</h3>
+                    <div id="solutionsContainer">
+                        <div class="solution-container">
+                            <div class="solution-header">
+                                Alternative 1
+                                <button type="button" class="remove-btn" onclick="removeSolution(this)">Remove</button>
+                            </div>
+                            <div class="solution-content">
+                                <input type="text" placeholder="Solution title" class="solution-title" value="Client-Side Registry Optimization">
+                                <textarea placeholder="Alternative solution description" class="solution-description">If server-side changes are not possible, modify Outlook client registry settings to improve timeout handling. This approach works for individual users but requires deployment across all affected clients.</textarea>
+                                <textarea placeholder="Steps/Commands" class="solution-code code">[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook\RPC]
+"Enable RPC/HTTP"=dword:00000001
+"Connection Timeout"=dword:00001770</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addSolution()">+ Add Alternative Solution</button>
+                </div>
+
+                <div class="section">
+                    <h3>Testing & Verification</h3>
+                    <div class="form-group">
+                        <label>Testing Steps</label>
+                        <textarea id="testingSteps" placeholder="How to verify the solution works">1. Restart all affected Outlook clients&#10;2. Monitor connection stability for 30 minutes&#10;3. Test sending large attachments (>10MB)&#10;4. Verify no timeout errors in Event Viewer&#10;5. Check Exchange performance counters for connection metrics&#10;6. Confirm with end users that issues are resolved</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Success Criteria</label>
+                        <textarea id="successCriteria" placeholder="How to know the solution worked">• No timeout errors for 24+ hours&#10;• Email send/receive operations complete within 10 seconds&#10;• Large attachments (up to 25MB) transfer successfully&#10;• Connection counters remain stable during peak hours&#10;• User satisfaction survey shows issue resolution</textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Prevention & Best Practices</h3>
+                    <div class="form-group">
+                        <label>Prevention Measures</label>
+                        <textarea id="prevention" placeholder="How to prevent this issue in the future">• Regularly monitor Exchange connection pool usage&#10;• Set up alerts for connection timeout spikes&#10;• Implement connection limit monitoring dashboards&#10;• Schedule quarterly firewall timeout reviews&#10;• Educate users on optimal email client settings</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Best Practices</label>
+                        <textarea id="bestPractices" placeholder="Recommended practices">• Keep Exchange servers and clients updated&#10;• Use cached Exchange mode for better performance&#10;• Limit mailbox sizes to reduce connection overhead&#10;• Implement proper network monitoring&#10;• Regular health checks on email infrastructure</textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Related Information</h3>
+                    <div class="form-group">
+                        <label>Related KB Articles</label>
+                        <textarea id="relatedArticles" placeholder="Links to related articles">KB-EMAIL-002: Exchange Server Performance Optimization&#10;KB-NETWORK-015: Firewall Configuration Best Practices&#10;KB-OUTLOOK-008: Client Connection Troubleshooting Guide</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>External References</label>
+                        <textarea id="externalRefs" placeholder="External documentation links">Microsoft Exchange Server Documentation&#10;RFC 3501 - Internet Message Access Protocol&#10;Exchange Server Connection Limits Best Practices (Microsoft TechNet)&#10;Outlook Client Configuration Guide</textarea>
+                    </div>
+                </div>
+
+                <button class="generate-btn" onclick="generatePreview()">🚀 Generate KB Article</button>
+            </div>
+
+            <div class="preview-section">
+                <div id="kbPreview">
+                    <p style="text-align: center; color: #7f8c8d; margin-top: 50px;">
+                        📖 Fill out the form and click "Generate KB Article" to see the preview
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
+
+    <script>
+        let logoData = '';
+        let stepCounter = 2;
+        let solutionCounter = 1;
+        let kbData = null;
+
+        // Logo upload handler
+        document.getElementById('logoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoData = e.target.result;
+                    const preview = document.getElementById('logoPreview');
+                    const text = document.getElementById('logoText');
+                    preview.src = logoData;
+                    preview.style.display = 'block';
+                    text.textContent = 'Logo uploaded successfully!';
+                    showStatus('Logo uploaded successfully!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Tags handling
+        document.getElementById('tagsInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim()) {
+                addTag(this.value.trim());
+                this.value = '';
+            }
+        });
+
+        function addTag(tagText) {
+            const tagsContainer = document.getElementById('tagsContainer');
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.innerHTML = `${tagText} <span class="remove-tag" onclick="removeTag(this)">×</span>`;
+            tagsContainer.appendChild(tag);
+        }
+
+        function removeTag(element) {
+            element.closest('.tag').remove();
+        }
+
+        function addStep() {
+            stepCounter++;
+            const container = document.getElementById('stepsContainer');
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'step-container';
+            stepDiv.innerHTML = `
+                <div class="step-header">
+                    Step ${stepCounter}
+                    <button type="button" class="remove-btn" onclick="removeStep(this)">Remove</button>
+                </div>
+                <div class="step-content">
+                    <input type="text" placeholder="Step title" class="step-title">
+                    <textarea placeholder="Detailed step instructions" class="step-description"></textarea>
+                    <textarea placeholder="Commands/Code (optional)" class="step-code code"></textarea>
+                </div>
+            `;
+            container.appendChild(stepDiv);
+        }
+
+        function removeStep(button) {
+            button.closest('.step-container').remove();
+            updateStepNumbers();
+        }
+
+        function updateStepNumbers() {
+            const steps = document.querySelectorAll('.step-header');
+            steps.forEach((step, index) => {
+                step.firstChild.textContent = `Step ${index + 1}`;
+            });
+            stepCounter = steps.length;
+        }
+
+        function addSolution() {
+            solutionCounter++;
+            const container = document.getElementById('solutionsContainer');
+            const solutionDiv = document.createElement('div');
+            solutionDiv.className = 'solution-container';
+            solutionDiv.innerHTML = `
+                <div class="solution-header">
+                    Alternative ${solutionCounter}
+                    <button type="button" class="remove-btn" onclick="removeSolution(this)">Remove</button>
+                </div>
+                <div class="solution-content">
+                    <input type="text" placeholder="Solution title" class="solution-title">
+                    <textarea placeholder="Alternative solution description" class="solution-description"></textarea>
+                    <textarea placeholder="Steps/Commands" class="solution-code code"></textarea>
+                </div>
+            `;
+            container.appendChild(solutionDiv);
+        }
+
+        function removeSolution(button) {
+            button.closest('.solution-container').remove();
+            updateSolutionNumbers();
+        }
+
+        function updateSolutionNumbers() {
+            const solutions = document.querySelectorAll('.solution-header');
+            solutions.forEach((solution, index) => {
+                solution.firstChild.textContent = `Alternative ${index + 1}`;
+            });
+            solutionCounter = solutions.length;
+        }
+
+        function collectKBData() {
+            const data = {
+                articleTitle: document.getElementById('articleTitle').value,
+                articleId: document.getElementById('articleId').value,
+                category: document.getElementById('category').value,
+                author: document.getElementById('author').value,
+                reviewer: document.getElementById('reviewer').value,
+                version: document.getElementById('version').value,
+                difficulty: document.getElementById('difficulty').value,
+                problemSummary: document.getElementById('problemSummary').value,
+                problemDescription: document.getElementById('problemDescription').value,
+                symptoms: document.getElementById('symptoms').value,
+                affectedSystems: document.getElementById('affectedSystems').value,
+                rootCause: document.getElementById('rootCause').value,
+                technicalDetails: document.getElementById('technicalDetails').value,
+                solutionOverview: document.getElementById('solutionOverview').value,
+                prerequisites: document.getElementById('prerequisites').value,
+                toolsRequired: document.getElementById('toolsRequired').value,
+                testingSteps: document.getElementById('testingSteps').value,
+                successCriteria: document.getElementById('successCriteria').value,
+                prevention: document.getElementById('prevention').value,
+                bestPractices: document.getElementById('bestPractices').value,
+                relatedArticles: document.getElementById('relatedArticles').value,
+                externalRefs: document.getElementById('externalRefs').value
+            };
+
+            // Collect tags
+            const tags = [];
+            document.querySelectorAll('.tag').forEach(tag => {
+                tags.push(tag.textContent.replace('×', '').trim());
+            });
+
+            // Collect steps
+            const steps = [];
+            document.querySelectorAll('.step-container').forEach((step, index) => {
+                const title = step.querySelector('.step-title').value;
+                const description = step.querySelector('.step-description').value;
+                const code = step.querySelector('.step-code').value;
+                if (title || description) {
+                    steps.push({ title, description, code, number: index + 1 });
+                }
+            });
+
+            // Collect alternative solutions
+            const solutions = [];
+            document.querySelectorAll('.solution-container').forEach((solution, index) => {
+                const title = solution.querySelector('.solution-title').value;
+                const description = solution.querySelector('.solution-description').value;
+                const code = solution.querySelector('.solution-code').value;
+                if (title || description) {
+                    solutions.push({ title, description, code, number: index + 1 });
+                }
+            });
+
+            return { data, tags, steps, solutions };
+        }
+
+        function generatePreview() {
+            try {
+                const { data, tags, steps, solutions } = collectKBData();
+                kbData = { data, tags, steps, solutions };
+                
+                const kbHTML = createKBDocument(data, tags, steps, solutions);
+                document.getElementById('kbPreview').innerHTML = kbHTML;
+                
+                showStatus('KB Article generated successfully! You can now download as DOCX or print as PDF.', 'success');
+            } catch (error) {
+                console.error('Preview generation error:', error);
+                showStatus('Error generating preview: ' + error.message, 'error');
+            }
+        }
+
+        function createKBDocument(data, tags, steps, solutions) {
+            const currentDate = new Date().toLocaleDateString();
+            const difficultyClass = `difficulty-${data.difficulty.toLowerCase()}`;
+            
+            return `
+                <div class="kb-document">
+                    <div class="doc-header">
+                        <div>
+                            ${logoData ? `<img src="${logoData}" class="logo-preview" alt="Company Logo">` : ''}
+                        </div>
+                        <div style="text-align: right;">
+                            <h2>Knowledge Base Article</h2>
+                            <p>Article ID: ${data.articleId}</p>
+                            <p>Generated: ${currentDate}</p>
+                        </div>
+                    </div>
+
+                    <div class="doc-content">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1>${data.articleTitle}</h1>
+                            <div class="difficulty-badge ${difficultyClass}">${data.difficulty} Level</div>
+                        </div>
+
+                        <div class="article-info">
+                            <h4>📖 Article Information</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Article ID:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.articleId}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Category:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.category}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Author:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.author}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Reviewer:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.reviewer}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Version:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${data.version}</td></tr>
+                                <tr><td style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;"><strong>Tags:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${tags.join(', ')}</td></tr>
+                            </table>
+                        </div>
+
+                        <h3>📝 Problem Summary</h3>
+                        <p><strong>${data.problemSummary}</strong></p>
+
+                        <div class="problem-section">
+                            <h4>🔍 Detailed Problem Description</h4>
+                            <p>${data.problemDescription}</p>
+                            
+                            <h4>⚠️ Symptoms</h4>
+                            <p style="white-space: pre-line;">${data.symptoms}</p>
+                            
+                            <h4>💻 Affected Systems</h4>
+                            <p style="white-space: pre-line;">${data.affectedSystems}</p>
+                        </div>
+
+                        <h3>🔧 Root Cause Analysis</h3>
+                        <p><strong>Identified Cause:</strong> ${data.rootCause}</p>
+                        <p><strong>Technical Details:</strong> ${data.technicalDetails}</p>
+
+                        <div class="solution-section">
+                            <h3>✅ Primary Solution</h3>
+                            <p><strong>Overview:</strong> ${data.solutionOverview}</p>
+                            
+                            <h4>📋 Prerequisites</h4>
+                            <p style="white-space: pre-line;">${data.prerequisites}</p>
+                            
+                            <h4>🛠️ Tools Required</h4>
+                            <p style="white-space: pre-line;">${data.toolsRequired}</p>
+                            
+                            <h4>🔄 Solution Steps</h4>
+                            ${steps.map(step => `
+                                <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa;">
+                                    <h5>Step ${step.number}: ${step.title}</h5>
+                                    <p>${step.description}</p>
+                                    ${step.code ? `<div class="code-block">${step.code}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        ${solutions.length > 0 ? `
+                            <h3>🔄 Alternative Solutions</h3>
+                            ${solutions.map(solution => `
+                                <div style="margin: 20px 0; padding: 15px; border-left: 4px solid #27ae60; background: #f8f9fa;">
+                                    <h4>Alternative ${solution.number}: ${solution.title}</h4>
+                                    <p>${solution.description}</p>
+                                    ${solution.code ? `<div class="code-block">${solution.code}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        ` : ''}
+
+                        <h3>🧪 Testing & Verification</h3>
+                        <h4>Testing Steps:</h4>
+                        <p style="white-space: pre-line;">${data.testingSteps}</p>
+                        <h4>Success Criteria:</h4>
+                        <p style="white-space: pre-line;">${data.successCriteria}</p>
+
+                        <h3>🛡️ Prevention & Best Practices</h3>
+                        <h4>Prevention Measures:</h4>
+                        <p style="white-space: pre-line;">${data.prevention}</p>
+                        <h4>Best Practices:</h4>
+                        <p style="white-space: pre-line;">${data.bestPractices}</p>
+
+                        <h3>📚 Related Information</h3>
+                        <h4>Related KB Articles:</h4>
+                        <p style="white-space: pre-line;">${data.relatedArticles}</p>
+                        <h4>External References:</h4>
+                        <p style="white-space: pre-line;">${data.externalRefs}</p>
+                    </div>
+
+                    <div class="doc-footer">
+                        <p>© ${new Date().getFullYear()} Knowledge Base | Article ${data.articleId} v${data.version} | Generated on ${currentDate} | For internal use only</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function generateDOCX() {
+            if (!kbData) {
+                showStatus('Please generate preview first!', 'error');
+                return;
+            }
+
+            const docxBtn = document.getElementById('docxBtn');
+            const originalHTML = docxBtn.innerHTML;
+            docxBtn.innerHTML = '<span class="loading"></span> Generating...';
+            docxBtn.disabled = true;
+
+            try {
+                if (typeof docx !== 'undefined') {
+                    await createKBDOCX(kbData.data, kbData.tags, kbData.steps, kbData.solutions);
+                    showStatus('DOCX file generated and downloaded successfully!', 'success');
+                } else {
+                    createWordCompatibleKB(kbData.data, kbData.tags, kbData.steps, kbData.solutions);
+                    showStatus('Word-compatible document downloaded!', 'success');
+                }
+            } catch (error) {
+                console.error('Error generating document:', error);
+                createWordCompatibleKB(kbData.data, kbData.tags, kbData.steps, kbData.solutions);
+                showStatus('Document generated using fallback method.', 'success');
+            }
+
+            docxBtn.innerHTML = originalHTML;
+            docxBtn.disabled = false;
+        }
+
+        async function createKBDOCX(data, tags, steps, solutions) {
+            try {
+                console.log('Creating enhanced KB DOCX document...');
+                const children = [];
+
+                // Header with logo if available
+                if (logoData) {
+                    try {
+                        // Convert logo to proper format for DOCX
+                        const logoResponse = await fetch(logoData);
+                        const logoBuffer = await logoResponse.arrayBuffer();
+                        
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.ImageRun({
+                                        data: logoBuffer,
+                                        transformation: {
+                                            width: 120,
+                                            height: 80,
+                                        },
+                                    })
+                                ],
+                                alignment: docx.AlignmentType.CENTER,
+                                spacing: { after: 300 }
+                            })
+                        );
+                    } catch (logoError) {
+                        console.log('Logo embedding failed, continuing without logo');
+                    }
+                }
+
+                // Professional Header Section
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "KNOWLEDGE BASE ARTICLE",
+                                bold: true,
+                                size: 16,
+                                color: "666666"
+                            })
+                        ],
+                        alignment: docx.AlignmentType.CENTER,
+                        spacing: { after: 100 }
+                    })
+                );
+
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: data.articleTitle,
+                                bold: true,
+                                size: 32,
+                                color: "2c3e50"
+                            })
+                        ],
+                        alignment: docx.AlignmentType.CENTER,
+                        spacing: { after: 200 }
+                    })
+                );
+
+                // Article Metadata Header
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `Article ID: ${data.articleId}  |  Category: ${data.category}  |  Difficulty: ${data.difficulty}`,
+                                size: 14,
+                                color: "3498db",
+                                bold: true
+                            })
+                        ],
+                        alignment: docx.AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    })
+                );
+
+                // Comprehensive Article Information Table
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "ARTICLE INFORMATION",
+                                bold: true,
+                                size: 20,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { before: 200, after: 200 }
+                    })
+                );
+
+                children.push(
+                    new docx.Table({
+                        width: { size: 100, type: docx.WidthType.PERCENTAGE },
+                        borders: {
+                            top: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            left: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            right: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            insideHorizontal: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                            insideVertical: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                        },
+                        rows: [
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Article ID:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        width: { size: 25, type: docx.WidthType.PERCENTAGE },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: data.articleId, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        width: { size: 25, type: docx.WidthType.PERCENTAGE },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Category:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        width: { size: 25, type: docx.WidthType.PERCENTAGE },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: data.category, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        width: { size: 25, type: docx.WidthType.PERCENTAGE },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    })
+                                ]
+                            }),
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Author:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: data.author, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Reviewer:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: data.reviewer, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    })
+                                ]
+                            }),
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Version:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: data.version, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Date:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: new Date().toLocaleDateString(), size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    })
+                                ]
+                            }),
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: "Keywords/Tags:", bold: true, size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        shading: { fill: "E8F4FD" },
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    }),
+                                    new docx.TableCell({
+                                        children: [new docx.Paragraph({ 
+                                            children: [new docx.TextRun({ text: tags.join(', '), size: 22 })],
+                                            spacing: { before: 100, after: 100 }
+                                        })],
+                                        columnSpan: 3,
+                                        margins: { top: 150, bottom: 150, left: 150, right: 150 }
+                                    })
+                                ]
+                            })
+                        ]
+                    })
+                );
+
+                children.push(new docx.Paragraph({ text: "", spacing: { after: 600 } }));
+
+                // Page break before main content
+                children.push(new docx.Paragraph({ 
+                    children: [new docx.PageBreak()],
+                    spacing: { after: 400 }
+                }));
+
+                // Professional Problem Section
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "1. PROBLEM DESCRIPTION",
+                                bold: true,
+                                size: 24,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { before: 400, after: 300 },
+                        border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                    })
+                );
+
+                // Problem Summary Box
+                children.push(
+                    new docx.Table({
+                        width: { size: 100, type: docx.WidthType.PERCENTAGE },
+                        borders: {
+                            top: { style: docx.BorderStyle.SINGLE, size: 2, color: "FFC107" },
+                            bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "FFC107" },
+                            left: { style: docx.BorderStyle.SINGLE, size: 2, color: "FFC107" },
+                            right: { style: docx.BorderStyle.SINGLE, size: 2, color: "FFC107" },
+                        },
+                        rows: [
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [
+                                            new docx.Paragraph({ 
+                                                children: [new docx.TextRun({ text: "PROBLEM SUMMARY", bold: true, size: 24, color: "856404" })],
+                                                spacing: { before: 200, after: 150 }
+                                            }),
+                                            new docx.Paragraph({ 
+                                                children: [new docx.TextRun({ text: data.problemSummary, size: 24 })],
+                                                spacing: { after: 200 }
+                                            })
+                                        ],
+                                        shading: { fill: "FFF3CD" },
+                                        margins: { top: 300, bottom: 300, left: 300, right: 300 }
+                                    })
+                                ]
+                            })
+                        ]
+                    })
+                );
+
+                children.push(new docx.Paragraph({ text: "", spacing: { after: 300 } }));
+
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "Detailed Description",
+                                bold: true,
+                                size: 20,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { after: 150 }
+                    })
+                );
+
+                children.push(
+                    new docx.Paragraph({
+                        children: [new docx.TextRun({ text: data.problemDescription, size: 24 })],
+                        spacing: { after: 300 }
+                    })
+                );
+
+                // Symptoms section
+                if (data.symptoms) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "Observable Symptoms",
+                                    bold: true,
+                                    size: 20,
+                                    color: "2c3e50"
+                                })
+                            ],
+                            spacing: { after: 150 }
+                        })
+                    );
+
+                    // Split symptoms by newlines and create bullet points
+                    const symptomLines = data.symptoms.split('\n').filter(line => line.trim());
+                    symptomLines.forEach(symptom => {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [new docx.TextRun({ text: symptom.replace(/^[•\-]\s*/, ''), size: 24 })],
+                                bullet: { level: 0 },
+                                spacing: { after: 100 }
+                            })
+                        );
+                    });
+
+                    children.push(new docx.Paragraph({ text: "", spacing: { after: 300 } }));
+                }
+
+                // Root Cause Analysis
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "2. ROOT CAUSE ANALYSIS",
+                                bold: true,
+                                size: 24,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { before: 600, after: 300 },
+                        border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                    })
+                );
+
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "Identified Cause:",
+                                bold: true,
+                                size: 20
+                            })
+                        ],
+                        spacing: { after: 150 }
+                    })
+                );
+
+                children.push(
+                    new docx.Paragraph({
+                        children: [new docx.TextRun({ text: data.rootCause, size: 24 })],
+                        spacing: { after: 300 }
+                    })
+                );
+
+                if (data.technicalDetails) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "Technical Details:",
+                                    bold: true,
+                                    size: 20
+                                })
+                            ],
+                            spacing: { after: 150 }
+                        })
+                    );
+
+                    children.push(
+                        new docx.Paragraph({
+                            children: [new docx.TextRun({ text: data.technicalDetails, size: 24 })],
+                            spacing: { after: 400 }
+                        })
+                    );
+                }
+
+                // Primary Solution Section
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "3. PRIMARY SOLUTION",
+                                bold: true,
+                                size: 24,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { before: 600, after: 300 },
+                        border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                    })
+                );
+
+                // Solution Overview Box
+                children.push(
+                    new docx.Table({
+                        width: { size: 100, type: docx.WidthType.PERCENTAGE },
+                        borders: {
+                            top: { style: docx.BorderStyle.SINGLE, size: 2, color: "28A745" },
+                            bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "28A745" },
+                            left: { style: docx.BorderStyle.SINGLE, size: 2, color: "28A745" },
+                            right: { style: docx.BorderStyle.SINGLE, size: 2, color: "28A745" },
+                        },
+                        rows: [
+                            new docx.TableRow({
+                                children: [
+                                    new docx.TableCell({
+                                        children: [
+                                            new docx.Paragraph({ 
+                                                children: [new docx.TextRun({ text: "SOLUTION OVERVIEW", bold: true, size: 24, color: "155724" })],
+                                                spacing: { before: 200, after: 150 }
+                                            }),
+                                            new docx.Paragraph({ 
+                                                children: [new docx.TextRun({ text: data.solutionOverview, size: 24 })],
+                                                spacing: { after: 200 }
+                                            })
+                                        ],
+                                        shading: { fill: "D4EDDA" },
+                                        margins: { top: 300, bottom: 300, left: 300, right: 300 }
+                                    })
+                                ]
+                            })
+                        ]
+                    })
+                );
+
+                children.push(new docx.Paragraph({ text: "", spacing: { after: 400 } }));
+
+                // Prerequisites and Tools
+                if (data.prerequisites) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "Prerequisites:",
+                                    bold: true,
+                                    size: 20,
+                                    color: "2c3e50"
+                                })
+                            ],
+                            spacing: { after: 150 }
+                        })
+                    );
+
+                    const prereqLines = data.prerequisites.split('\n').filter(line => line.trim());
+                    prereqLines.forEach(prereq => {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [new docx.TextRun({ text: prereq.replace(/^[•\-]\s*/, ''), size: 24 })],
+                                bullet: { level: 0 },
+                                spacing: { after: 100 }
+                            })
+                        );
+                    });
+
+                    children.push(new docx.Paragraph({ text: "", spacing: { after: 300 } }));
+                }
+
+                // Solution Steps with Enhanced Formatting
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "Solution Steps:",
+                                bold: true,
+                                size: 20,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { after: 300 }
+                    })
+                );
+
+                steps.forEach((step, index) => {
+                    // Step Header
+                    children.push(
+                        new docx.Table({
+                            width: { size: 100, type: docx.WidthType.PERCENTAGE },
+                            borders: {
+                                top: { style: docx.BorderStyle.SINGLE, size: 1, color: "3498db" },
+                                bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "3498db" },
+                                left: { style: docx.BorderStyle.SINGLE, size: 1, color: "3498db" },
+                                right: { style: docx.BorderStyle.SINGLE, size: 1, color: "3498db" },
+                            },
+                            rows: [
+                                new docx.TableRow({
+                                    children: [
+                                        new docx.TableCell({
+                                            children: [
+                                                new docx.Paragraph({ 
+                                                    children: [new docx.TextRun({ text: `STEP ${step.number}: ${step.title}`, bold: true, size: 24, color: "FFFFFF" })],
+                                                    spacing: { before: 150, after: 150 }
+                                                })
+                                            ],
+                                            shading: { fill: "3498DB" },
+                                            margins: { top: 200, bottom: 200, left: 300, right: 300 }
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    );
+
+                    // Step Description
+                    children.push(
+                        new docx.Paragraph({
+                            children: [new docx.TextRun({ text: step.description, size: 24 })],
+                            spacing: { before: 200, after: 200 }
+                        })
+                    );
+
+                    // Code Block if present
+                    if (step.code && step.code.trim()) {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: "Commands/Code:",
+                                        bold: true,
+                                        size: 18
+                                    })
+                                ],
+                                spacing: { after: 100 }
+                            })
+                        );
+
+                        children.push(
+                            new docx.Table({
+                                width: { size: 100, type: docx.WidthType.PERCENTAGE },
+                                borders: {
+                                    top: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                                    bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                                    left: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                                    right: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                                },
+                                rows: [
+                                    new docx.TableRow({
+                                        children: [
+                                            new docx.TableCell({
+                                                children: [
+                                                    new docx.Paragraph({ 
+                                                        children: [new docx.TextRun({ 
+                                                            text: step.code, 
+                                                            size: 20,
+                                                            font: "Courier New"
+                                                        })],
+                                                        spacing: { before: 200, after: 200 }
+                                                    })
+                                                ],
+                                                shading: { fill: "F8F9FA" },
+                                                margins: { top: 200, bottom: 200, left: 300, right: 300 }
+                                            })
+                                        ]
+                                    })
+                                ]
+                            })
+                        );
+                    }
+
+                    children.push(new docx.Paragraph({ text: "", spacing: { after: 400 } }));
+                });
+
+                // Alternative Solutions
+                if (solutions.length > 0) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "4. ALTERNATIVE SOLUTIONS",
+                                    bold: true,
+                                    size: 24,
+                                    color: "2c3e50"
+                                })
+                            ],
+                            spacing: { before: 600, after: 300 },
+                            border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                        })
+                    );
+
+                    solutions.forEach(solution => {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: `Alternative ${solution.number}: ${solution.title}`,
+                                        bold: true,
+                                        size: 20,
+                                        color: "27ae60"
+                                    })
+                                ],
+                                spacing: { before: 300, after: 150 }
+                            })
+                        );
+
+                        children.push(
+                            new docx.Paragraph({
+                                children: [new docx.TextRun({ text: solution.description, size: 24 })],
+                                spacing: { after: solution.code ? 200 : 400 }
+                            })
+                        );
+
+                        if (solution.code && solution.code.trim()) {
+                            children.push(
+                                new docx.Table({
+                                    width: { size: 100, type: docx.WidthType.PERCENTAGE },
+                                    borders: {
+                                        top: { style: docx.BorderStyle.SINGLE, size: 1, color: "27AE60" },
+                                        bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "27AE60" },
+                                        left: { style: docx.BorderStyle.SINGLE, size: 1, color: "27AE60" },
+                                        right: { style: docx.BorderStyle.SINGLE, size: 1, color: "27AE60" },
+                                    },
+                                    rows: [
+                                        new docx.TableRow({
+                                            children: [
+                                                new docx.TableCell({
+                                                    children: [
+                                                        new docx.Paragraph({ 
+                                                            children: [new docx.TextRun({ 
+                                                                text: solution.code, 
+                                                                size: 20,
+                                                                font: "Courier New"
+                                                            })],
+                                                            spacing: { before: 200, after: 200 }
+                                                        })
+                                                    ],
+                                                    shading: { fill: "E8F5E8" },
+                                                    margins: { top: 200, bottom: 200, left: 300, right: 300 }
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            );
+
+                            children.push(new docx.Paragraph({ text: "", spacing: { after: 400 } }));
+                        }
+                    });
+                }
+
+                // Testing & Verification
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "5. TESTING & VERIFICATION",
+                                bold: true,
+                                size: 24,
+                                color: "2c3e50"
+                            })
+                        ],
+                        spacing: { before: 600, after: 300 },
+                        border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                    })
+                );
+
+                children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: "Testing Steps:",
+                                bold: true,
+                                size: 20
+                            })
+                        ],
+                        spacing: { after: 150 }
+                    })
+                );
+
+                const testLines = data.testingSteps.split('\n').filter(line => line.trim());
+                testLines.forEach(test => {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [new docx.TextRun({ text: test.replace(/^\d+\.\s*/, ''), size: 24 })],
+                            numbering: { reference: "default-numbering", level: 0 },
+                            spacing: { after: 150 }
+                        })
+                    );
+                });
+
+                if (data.successCriteria) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "Success Criteria:",
+                                    bold: true,
+                                    size: 20
+                                })
+                            ],
+                            spacing: { before: 300, after: 150 }
+                        })
+                    );
+
+                    const criteriaLines = data.successCriteria.split('\n').filter(line => line.trim());
+                    criteriaLines.forEach(criteria => {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [new docx.TextRun({ text: criteria.replace(/^[•\-]\s*/, ''), size: 24 })],
+                                bullet: { level: 0 },
+                                spacing: { after: 100 }
+                            })
+                        );
+                    });
+                }
+
+                // Prevention & Best Practices
+                if (data.prevention || data.bestPractices) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "6. PREVENTION & BEST PRACTICES",
+                                    bold: true,
+                                    size: 24,
+                                    color: "2c3e50"
+                                })
+                            ],
+                            spacing: { before: 600, after: 300 },
+                            border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                        })
+                    );
+
+                    if (data.prevention) {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: "Prevention Measures:",
+                                        bold: true,
+                                        size: 20
+                                    })
+                                ],
+                                spacing: { after: 150 }
+                            })
+                        );
+
+                        const preventionLines = data.prevention.split('\n').filter(line => line.trim());
+                        preventionLines.forEach(prevention => {
+                            children.push(
+                                new docx.Paragraph({
+                                    children: [new docx.TextRun({ text: prevention.replace(/^[•\-]\s*/, ''), size: 24 })],
+                                    bullet: { level: 0 },
+                                    spacing: { after: 100 }
+                                })
+                            );
+                        });
+
+                        children.push(new docx.Paragraph({ text: "", spacing: { after: 300 } }));
+                    }
+
+                    if (data.bestPractices) {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: "Best Practices:",
+                                        bold: true,
+                                        size: 20
+                                    })
+                                ],
+                                spacing: { after: 150 }
+                            })
+                        );
+
+                        const practiceLines = data.bestPractices.split('\n').filter(line => line.trim());
+                        practiceLines.forEach(practice => {
+                            children.push(
+                                new docx.Paragraph({
+                                    children: [new docx.TextRun({ text: practice.replace(/^[•\-]\s*/, ''), size: 24 })],
+                                    bullet: { level: 0 },
+                                    spacing: { after: 100 }
+                                })
+                            );
+                        });
+                    }
+                }
+
+                // Related Information
+                if (data.relatedArticles || data.externalRefs) {
+                    children.push(
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: "7. RELATED INFORMATION",
+                                    bold: true,
+                                    size: 24,
+                                    color: "2c3e50"
+                                })
+                            ],
+                            spacing: { before: 600, after: 300 },
+                            border: { bottom: { style: docx.BorderStyle.SINGLE, size: 2, color: "3498db" } }
+                        })
+                    );
+
+                    if (data.relatedArticles) {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: "Related KB Articles:",
+                                        bold: true,
+                                        size: 20
+                                    })
+                                ],
+                                spacing: { after: 150 }
+                            })
+                        );
+
+                        const relatedLines = data.relatedArticles.split('\n').filter(line => line.trim());
+                        relatedLines.forEach(related => {
+                            children.push(
+                                new docx.Paragraph({
+                                    children: [new docx.TextRun({ text: related, size: 24 })],
+                                    bullet: { level: 0 },
+                                    spacing: { after: 100 }
+                                })
+                            );
+                        });
+
+                        children.push(new docx.Paragraph({ text: "", spacing: { after: 300 } }));
+                    }
+
+                    if (data.externalRefs) {
+                        children.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new docx.TextRun({
+                                        text: "External References:",
+                                        bold: true,
+                                        size: 20
+                                    })
+                                ],
+                                spacing: { after: 150 }
+                            })
+                        );
+
+                        const refLines = data.externalRefs.split('\n').filter(line => line.trim());
+                        refLines.forEach(ref => {
+                            children.push(
+                                new docx.Paragraph({
+                                    children: [new docx.TextRun({ text: ref, size: 24 })],
+                                    bullet: { level: 0 },
+                                    spacing: { after: 100 }
+                                })
+                            );
+                        });
+                    }
+                }
+
+                // Create document with headers and footers
+                const doc = new docx.Document({
+                    numbering: {
+                        config: [
+                            {
+                                reference: "default-numbering",
+                                levels: [
+                                    {
+                                        level: 0,
+                                        format: docx.LevelFormat.DECIMAL,
+                                        text: "%1.",
+                                        alignment: docx.AlignmentType.LEFT,
+                                        style: {
+                                            paragraph: {
+                                                indent: { left: 720, hanging: 360 },
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    sections: [{
+                        properties: {
+                            page: {
+                                margin: {
+                                    top: 1440,    // 1 inch
+                                    right: 1440,  // 1 inch
+                                    bottom: 1440, // 1 inch  
+                                    left: 1440,   // 1 inch
+                                },
+                            },
+                        },
+                        headers: {
+                            default: new docx.Header({
+                                children: [
+                                    new docx.Paragraph({
+                                        children: [
+                                            new docx.TextRun({
+                                                text: `KB Article: ${data.articleId} | ${data.articleTitle}`,
+                                                size: 18,
+                                                color: "666666"
+                                            })
+                                        ],
+                                        alignment: docx.AlignmentType.CENTER,
+                                        border: { bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" } }
+                                    })
+                                ]
+                            })
+                        },
+                        footers: {
+                            default: new docx.Footer({
+                                children: [
+                                    new docx.Paragraph({
+                                        children: [
+                                            new docx.TextRun({
+                                                text: `Knowledge Base | Version ${data.version} | Generated: ${new Date().toLocaleDateString()} | Page `,
+                                                size: 16,
+                                                color: "666666"
+                                            }),
+                                            new docx.TextRun({
+                                                children: [docx.PageNumber.CURRENT],
+                                                size: 16,
+                                                color: "666666"
+                                            }),
+                                            new docx.TextRun({
+                                                text: " of ",
+                                                size: 16,
+                                                color: "666666"
+                                            }),
+                                            new docx.TextRun({
+                                                children: [docx.PageNumber.TOTAL_PAGES],
+                                                size: 16,
+                                                color: "666666"
+                                            })
+                                        ],
+                                        alignment: docx.AlignmentType.CENTER,
+                                        border: { top: { style: docx.BorderStyle.SINGLE, size: 1, color: "CCCCCC" } }
+                                    })
+                                ]
+                            })
+                        },
+                        children: children
+                    }]
+                });
+
+                console.log('Document structure created, generating blob...');
+                const blob = await docx.Packer.toBlob(doc);
+
+                if (!blob || blob.size === 0) {
+                    throw new Error('Generated document is empty');
+                }
+
+                console.log('DOCX blob generated successfully, size:', blob.size);
+
+                const fileName = `${data.articleId}_${data.articleTitle.replace(/[^a-zA-Z0-9]/g, '_')}_v${data.version}.docx`;
+                saveAs(blob, fileName);
+
+                console.log('Enhanced KB DOCX file saved:', fileName);
+
+            } catch (error) {
+                console.error('Enhanced DOCX creation error:', error);
+                throw error;
+            }
+        }
+
+        function createWordCompatibleKB(data, tags, steps, solutions) {
+            const htmlContent = document.getElementById('kbPreview').innerHTML;
+            const docContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>KB Article - ${data.articleId}</title>
+                    <style>
+                        body { font-family: 'Calibri', Arial, sans-serif; margin: 40px; line-height: 1.6; color: #333; }
+                        .kb-document { background: white; }
+                        .doc-header { background: #2c3e50; color: white; padding: 20px; margin-bottom: 20px; }
+                        .doc-content { padding: 0; }
+                        .doc-footer { background: #ecf0f1; padding: 15px; text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 30px; }
+                        .logo-preview { max-width: 100px; max-height: 60px; object-fit: contain; }
+                        .article-info, .problem-section, .solution-section { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                        .code-block { background: #f8f9fa; border: 1px solid #e0e0e0; padding: 10px; font-family: monospace; }
+                        table { border-collapse: collapse; width: 100%; }
+                        td { padding: 8px; border: 1px solid #ddd; }
+                        h1, h2, h3, h4 { color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
+                        @page { margin: 1in; }
+                    </style>
+                </head>
+                <body>${htmlContent}</body>
+                </html>
+            `;
+
+            const blob = new Blob([docContent], { type: 'text/html;charset=utf-8' });
+            const fileName = `${data.articleId}_${data.articleTitle.replace(/[^a-zA-Z0-9]/g, '_')}_v${data.version}.doc`;
+            saveAs(blob, fileName);
+        }
+
+        function generatePDF() {
+            if (!kbData) {
+                showStatus('Please generate preview first!', 'error');
+                return;
+            }
+
+            const content = document.getElementById('kbPreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>KB Article - ${kbData.data.articleId}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                            .kb-document { background: white; }
+                            .doc-header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                            .doc-content { padding: 0; }
+                            .doc-footer { background: #ecf0f1; padding: 15px; text-align: center; font-size: 12px; color: #7f8c8d; margin-top: 30px; }
+                            .logo-preview { max-width: 100px; max-height: 60px; object-fit: contain; }
+                            .article-info, .problem-section, .solution-section { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                            .code-block { background: #f8f9fa; border: 1px solid #e0e0e0; padding: 10px; font-family: monospace; }
+                            table { border-collapse: collapse; width: 100%; }
+                            td { padding: 8px; border: 1px solid #ddd; }
+                            h1, h2, h3, h4 { color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
+                            @page { margin: 1in; }
+                        </style>
+                    </head>
+                    <body>${content}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type === 'error' ? 'error' : ''}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 4000);
+        }
+
+        // Initialize with today's date and check libraries
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check library loading
+            setTimeout(() => {
+                if (typeof docx !== 'undefined' && typeof saveAs !== 'undefined') {
+                    showStatus('Libraries loaded successfully! Document generation ready.', 'success');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
