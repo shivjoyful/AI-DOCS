@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCA Template Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .timeline-entry, .action-entry, .why-entry {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .timeline-entry input, .action-entry input, .action-entry select {
+            flex: 1;
+        }
+
+        .add-btn, .remove-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .add-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .generate-section {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .output-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .output-content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .rca-output h1, .rca-output h2, .rca-output h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .rca-output h1 {
+            font-size: 2rem;
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .rca-output h2 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+
+        .rca-output h3 {
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .rca-output table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        .rca-output th, .rca-output td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .rca-output th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .rca-output tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .rca-output .why-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .rca-output .why-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .copy-btn {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .timeline-entry, .action-entry {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RCA Template Generator</h1>
+            <p>Universal Root Cause Analysis for Active Directory & Azure Incidents</p>
+        </div>
+
+        <div class="form-container">
+            <form id="rcaForm">
+                <!-- Document Info Section -->
+                <div class="section">
+                    <h2>Document Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="documentId">Document ID:</label>
+                            <input type="text" id="documentId" placeholder="RCA20241201-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <select id="status">
+                                <option value="Draft">Draft</option>
+                                <option value="In Review">In Review</option>
+                                <option value="Final">Final</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="severity">Incident Severity:</label>
+                            <select id="severity">
+                                <option value="Sev-1">Sev-1 (Full outage)</option>
+                                <option value="Sev-2">Sev-2 (Partial outage)</option>
+                                <option value="Sev-3">Sev-3 (Performance issue)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Executive Summary Section -->
+                <div class="section">
+                    <h2>Section 1: Executive Summary</h2>
+                    <div class="form-group">
+                        <label for="incidentTitle">Incident Title:</label>
+                        <input type="text" id="incidentTitle" placeholder="Azure AD Connect Sync Failure Causing Object Mismatch">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startTime">Start Time (UTC):</label>
+                            <input type="datetime-local" id="startTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="detectionTime">Detection Time (UTC):</label>
+                            <input type="datetime-local" id="detectionTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="resolutionTime">Resolution Time (UTC):</label>
+                            <input type="datetime-local" id="resolutionTime">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalDowntime">Total Downtime/Duration:</label>
+                        <input type="text" id="totalDowntime" placeholder="2 hours, 15 minutes">
+                    </div>
+                    <div class="form-group">
+                        <label for="impactSummary">Impact Summary:</label>
+                        <textarea id="impactSummary" placeholder="Users unable to authenticate to cloud applications..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="rootCauseSummary">Root Cause (1-2 sentences):</label>
+                        <textarea id="rootCauseSummary" placeholder="A disk space alert for the Azure AD Connect server was misrouted..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="resolutionSummary">Resolution Summary (1-2 sentences):</label>
+                        <textarea id="resolutionSummary" placeholder="Cleared disk space, restarted the Microsoft Azure AD Sync service..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Timeline Section -->
+                <div class="section">
+                    <h2>Section 2: Incident Timeline</h2>
+                    <div id="timelineEntries">
+                        <div class="timeline-entry">
+                            <input type="time" placeholder="14:05" style="flex: 0 0 100px;">
+                            <input type="text" placeholder="Event Description">
+                            <input type="text" placeholder="Actor (Person/System)">
+                            <input type="text" placeholder="Notes">
+                            <button type="button" class="remove-btn" onclick="removeTimelineEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addTimelineEntry()">Add Timeline Entry</button>
+                </div>
+
+                <!-- Impact Analysis Section -->
+                <div class="section">
+                    <h2>Section 3: Detailed Impact Analysis</h2>
+                    <div class="form-group">
+                        <label for="affectedSystems">Affected Systems/Services:</label>
+                        <textarea id="affectedSystems" placeholder="Azure AD Connect, Azure AD / Entra ID, Office 365, Salesforce..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="userImpact">User Impact:</label>
+                        <textarea id="userImpact" placeholder="Type: Authentication failures... Scope: All users... Duration: 1 hour 35 minutes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessImpact">Business Impact:</label>
+                        <textarea id="businessImpact" placeholder="Blocked access to CRM for sales team during peak hours..."></textarea>
+                    </div>
+                </div>
+
+                <!-- 5 Whys Section -->
+                <div class="section">
+                    <h2>Section 4: The 5 Whys - Root Cause Analysis</h2>
+                    <div class="form-group">
+                        <label for="problemStatement">Problem Statement:</label>
+                        <textarea id="problemStatement" placeholder="Users were unable to authenticate to applications federated with Azure AD."></textarea>
+                    </div>
+                    <div id="whyEntries">
+                        <div class="why-entry">
+                            <input type="text" placeholder="Why #1: Because Azure AD was not receiving updated user information...">
+                            <button type="button" class="remove-btn" onclick="removeWhyEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addWhyEntry()">Add Why</button>
+                </div>
+
+                <!-- CAPA Section -->
+                <div class="section">
+                    <h2>Section 5: Corrective and Preventive Actions (CAPA)</h2>
+                    <div id="actionEntries">
+                        <div class="action-entry">
+                            <select style="flex: 0 0 120px;">
+                                <option value="Corrective">Corrective</option>
+                                <option value="Preventive">Preventive</option>
+                            </select>
+                            <input type="text" placeholder="Action Description">
+                            <input type="text" placeholder="Owner">
+                            <input type="date" style="flex: 0 0 150px;">
+                            <button type="button" class="remove-btn" onclick="removeActionEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addActionEntry()">Add Action</button>
+                </div>
+
+                <!-- Lessons Learned Section -->
+                <div class="section">
+                    <h2>Section 6: Lessons Learned</h2>
+                    <div class="form-group">
+                        <label for="wentWell">What went well?</label>
+                        <textarea id="wentWell" placeholder="The escalation from Help Desk to the Infrastructure team was swift..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="improvements">What could be improved?</label>
+                        <textarea id="improvements" placeholder="Alert Fatigue & Misrouting: Critical alerts must create tickets..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Sign-off Section -->
+                <div class="section">
+                    <h2>Section 7: Sign-off</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rcaAuthor">RCA Author:</label>
+                            <input type="text" id="rcaAuthor" placeholder="Name, Title">
+                        </div>
+                        <div class="form-group">
+                            <label for="techReview">Technical Review:</label>
+                            <input type="text" id="techReview" placeholder="Name, Title">
+                        </div>
+                        <div class="form-group">
+                            <label for="mgmtReview">Management Review:</label>
+                            <input type="text" id="mgmtReview" placeholder="Name, Title">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateFinalized">Date Finalized:</label>
+                        <input type="date" id="dateFinalized">
+                    </div>
+                </div>
+            </form>
+
+            <div class="generate-section">
+                <button class="generate-btn" onclick="generateHTML()">Generate HTML</button>
+                <button class="generate-btn" onclick="generateDOCX()">Generate DOCX</button>
+            </div>
+
+            <div id="outputSection" class="output-section">
+                <h2>Generated RCA Document</h2>
+                <div id="outputContent" class="output-content"></div>
+                <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+    <script>
+        function addTimelineEntry() {
+            const container = document.getElementById('timelineEntries');
+            const entry = document.createElement('div');
+            entry.className = 'timeline-entry';
+            entry.innerHTML = `
+                <input type="time" placeholder="14:05" style="flex: 0 0 100px;">
+                <input type="text" placeholder="Event Description">
+                <input type="text" placeholder="Actor (Person/System)">
+                <input type="text" placeholder="Notes">
+                <button type="button" class="remove-btn" onclick="removeTimelineEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeTimelineEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function addWhyEntry() {
+            const container = document.getElementById('whyEntries');
+            const whyNumber = container.children.length + 1;
+            const entry = document.createElement('div');
+            entry.className = 'why-entry';
+            entry.innerHTML = `
+                <input type="text" placeholder="Why #${whyNumber}: Because...">
+                <button type="button" class="remove-btn" onclick="removeWhyEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeWhyEntry(button) {
+            button.parentElement.remove();
+            // Update placeholder numbers
+            const entries = document.querySelectorAll('#whyEntries .why-entry input');
+            entries.forEach((input, index) => {
+                input.placeholder = `Why #${index + 1}: Because...`;
+            });
+        }
+
+        function addActionEntry() {
+            const container = document.getElementById('actionEntries');
+            const entry = document.createElement('div');
+            entry.className = 'action-entry';
+            entry.innerHTML = `
+                <select style="flex: 0 0 120px;">
+                    <option value="Corrective">Corrective</option>
+                    <option value="Preventive">Preventive</option>
+                </select>
+                <input type="text" placeholder="Action Description">
+                <input type="text" placeholder="Owner">
+                <input type="date" style="flex: 0 0 150px;">
+                <button type="button" class="remove-btn" onclick="removeActionEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeActionEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function formatDateTime(dateTime) {
+            if (!dateTime) return '';
+            const date = new Date(dateTime);
+            return date.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
+        }
+
+        function collectTimelineData() {
+            const entries = document.querySelectorAll('#timelineEntries .timeline-entry');
+            const timelineData = [];
+            entries.forEach(entry => {
+                const inputs = entry.querySelectorAll('input');
+                if (inputs[1].value.trim()) {
+                    timelineData.push({
+                        time: inputs[0].value,
+                        event: inputs[1].value,
+                        actor: inputs[2].value,
+                        notes: inputs[3].value
+                    });
+                }
+            });
+            return timelineData;
+        }
+
+        function collectWhyData() {
+            const entries = document.querySelectorAll('#whyEntries .why-entry input');
+            const whyData = [];
+            entries.forEach((input, index) => {
+                if (input.value.trim()) {
+                    whyData.push({
+                        number: index + 1,
+                        description: input.value
+                    });
+                }
+            });
+            return whyData;
+        }
+
+        function collectActionData() {
+            const entries = document.querySelectorAll('#actionEntries .action-entry');
+            const actionData = [];
+            entries.forEach(entry => {
+                const select = entry.querySelector('select');
+                const inputs = entry.querySelectorAll('input');
+                if (inputs[0].value.trim()) {
+                    actionData.push({
+                        type: select.value,
+                        description: inputs[0].value,
+                        owner: inputs[1].value,
+                        targetDate: inputs[2].value
+                    });
+                }
+            });
+            return actionData;
+        }
+
+        function generateHTML() {
+            const timelineData = collectTimelineData();
+            const whyData = collectWhyData();
+            const actionData = collectActionData();
+
+            const html = `
+                <div class="rca-output">
+                    <h1>Universal RCA Template for Active Directory & Azure Incidents</h1>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <p><strong>Document ID:</strong> ${document.getElementById('documentId').value}</p>
+                        <p><strong>Status:</strong> ${document.getElementById('status').value}</p>
+                        <p><strong>Incident Severity:</strong> ${document.getElementById('severity').value}</p>
+                    </div>
+
+                    <h2>Section 1: Executive Summary</h2>
+                    <p><strong>Incident Title:</strong> ${document.getElementById('incidentTitle').value}</p>
+                    <p><strong>Start Time (UTC):</strong> ${formatDateTime(document.getElementById('startTime').value)}</p>
+                    <p><strong>Detection Time (UTC):</strong> ${formatDateTime(document.getElementById('detectionTime').value)}</p>
+                    <p><strong>Resolution Time (UTC):</strong> ${formatDateTime(document.getElementById('resolutionTime').value)}</p>
+                    <p><strong>Total Downtime/Duration:</strong> ${document.getElementById('totalDowntime').value}</p>
+                    <p><strong>Impact Summary:</strong> ${document.getElementById('impactSummary').value}</p>
+                    <p><strong>Root Cause:</strong> ${document.getElementById('rootCauseSummary').value}</p>
+                    <p><strong>Resolution Summary:</strong> ${document.getElementById('resolutionSummary').value}</p>
+
+                    <h2>Section 2: Incident Timeline</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>UTC Time</th>
+                                <th>Event Description</th>
+                                <th>Actor (Person/System)</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${timelineData.map(entry => `
+                                <tr>
+                                    <td>${entry.time}</td>
+                                    <td>${entry.event}</td>
+                                    <td>${entry.actor}</td>
+                                    <td>${entry.notes}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <h2>Section 3: Detailed Impact Analysis</h2>
+                    <h3>Affected Systems/Services:</h3>
+                    <p>${document.getElementById('affectedSystems').value.replace(/\n/g, '<br>')}</p>
+                    <h3>User Impact:</h3>
+                    <p>${document.getElementById('userImpact').value.replace(/\n/g, '<br>')}</p>
+                    <h3>Business Impact:</h3>
+                    <p>${document.getElementById('businessImpact').value.replace(/\n/g, '<br>')}</p>
+
+                    <h2>Section 4: The 5 Whys - Root Cause Analysis</h2>
+                    <p><strong>Problem Statement:</strong> ${document.getElementById('problemStatement').value}</p>
+                    <div class="why-list">
+                        ${whyData.map(why => `
+                            <div class="why-item">
+                                <strong>Why ${why.number}:</strong> ${why.description}
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <h2>Section 5: Corrective and Preventive Actions (CAPA)</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action Type</th>
+                                <th>Description</th>
+                                <th>Owner</th>
+                                <th>Target Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${actionData.map(action => `
+                                <tr>
+                                    <td>${action.type}</td>
+                                    <td>${action.description}</td>
+                                    <td>${action.owner}</td>
+                                    <td>${action.targetDate}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <h2>Section 6: Lessons Learned</h2>
+                    <h3>What went well?</h3>
+                    <p>${document.getElementById('wentWell').value.replace(/\n/g, '<br>')}</p>
+                    <h3>What could be improved?</h3>
+                    <p>${document.getElementById('improvements').value.replace(/\n/g, '<br>')}</p>
+
+                    <h2>Section 7: Sign-off</h2>
+                    <p><strong>RCA Author:</strong> ${document.getElementById('rcaAuthor').value}</p>
+                    <p><strong>Technical Review:</strong> ${document.getElementById('techReview').value}</p>
+                    <p><strong>Management Review:</strong> ${document.getElementById('mgmtReview').value}</p>
+                    <p><strong>Date Finalized:</strong> ${document.getElementById('dateFinalized').value}</p>
+                </div>
+            `;
+
+            document.getElementById('outputContent').innerHTML = html;
+            document.getElementById('outputSection').style.display = 'block';
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateDOCX() {
+            const timelineData = collectTimelineData();
+            const whyData = collectWhyData();
+            const actionData = collectActionData();
+
+            // Create timeline table
+            const timelineRows = timelineData.map(entry => 
+                new docx.TableRow({
+                    children: [
+                        new docx.TableCell({ children: [new docx.Paragraph(entry.time)] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(entry.event)] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(entry.actor)] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(entry.notes)] })
+                    ]
+                })
+            );
+
+            // Create CAPA table
+            const capaRows = actionData.map(action => 
+                new docx.TableRow({
+                    children: [
+                        new docx.TableCell({ children: [new docx.Paragraph(action.type)] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(action.description)] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(action.owner)] }),
+                        new docx.TableCell({ children: [new docx.Paragraph(action.targetDate)] })
+                    ]
+                })
+            );
+
+            const doc = new docx.Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new docx.Paragraph({
+                            text: "Universal RCA Template for Active Directory & Azure Incidents",
+                            heading: docx.HeadingLevel.TITLE,
+                            alignment: docx.AlignmentType.CENTER
+                        }),
+                        new docx.Paragraph({ text: "" }),
+                        new docx.Paragraph({ text: `Document ID: ${document.getElementById('documentId').value}` }),
+                        new docx.Paragraph({ text: `Status: ${document.getElementById('status').value}` }),
+                        new docx.Paragraph({ text: `Incident Severity: ${document.getElementById('severity').value}` }),
+                        new docx.Paragraph({ text: "" }),
+                        
+                        new docx.Paragraph({
+                            text: "Section 1: Executive Summary",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Paragraph({ text: `Incident Title: ${document.getElementById('incidentTitle').value}` }),
+                        new docx.Paragraph({ text: `Start Time (UTC): ${formatDateTime(document.getElementById('startTime').value)}` }),
+                        new docx.Paragraph({ text: `Detection Time (UTC): ${formatDateTime(document.getElementById('detectionTime').value)}` }),
+                        new docx.Paragraph({ text: `Resolution Time (UTC): ${formatDateTime(document.getElementById('resolutionTime').value)}` }),
+                        new docx.Paragraph({ text: `Total Downtime/Duration: ${document.getElementById('totalDowntime').value}` }),
+                        new docx.Paragraph({ text: `Impact Summary: ${document.getElementById('impactSummary').value}` }),
+                        new docx.Paragraph({ text: `Root Cause: ${document.getElementById('rootCauseSummary').value}` }),
+                        new docx.Paragraph({ text: `Resolution Summary: ${document.getElementById('resolutionSummary').value}` }),
+                        new docx.Paragraph({ text: "" }),
+
+                        new docx.Paragraph({
+                            text: "Section 2: Incident Timeline",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Table({
+                            rows: [
+                                new docx.TableRow({
+                                    children: [
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "UTC Time", bold: true })] }),
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Event Description", bold: true })] }),
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Actor (Person/System)", bold: true })] }),
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Notes", bold: true })] })
+                                    ]
+                                }),
+                                ...timelineRows
+                            ]
+                        }),
+                        new docx.Paragraph({ text: "" }),
+
+                        new docx.Paragraph({
+                            text: "Section 3: Detailed Impact Analysis",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Paragraph({
+                            text: "Affected Systems/Services:",
+                            heading: docx.HeadingLevel.HEADING_2
+                        }),
+                        new docx.Paragraph({ text: document.getElementById('affectedSystems').value }),
+                        new docx.Paragraph({
+                            text: "User Impact:",
+                            heading: docx.HeadingLevel.HEADING_2
+                        }),
+                        new docx.Paragraph({ text: document.getElementById('userImpact').value }),
+                        new docx.Paragraph({
+                            text: "Business Impact:",
+                            heading: docx.HeadingLevel.HEADING_2
+                        }),
+                        new docx.Paragraph({ text: document.getElementById('businessImpact').value }),
+                        new docx.Paragraph({ text: "" }),
+
+                        new docx.Paragraph({
+                            text: "Section 4: The 5 Whys - Root Cause Analysis",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Paragraph({ text: `Problem Statement: ${document.getElementById('problemStatement').value}` }),
+                        ...whyData.map(why => 
+                            new docx.Paragraph({ text: `Why ${why.number}: ${why.description}` })
+                        ),
+                        new docx.Paragraph({ text: "" }),
+
+                        new docx.Paragraph({
+                            text: "Section 5: Corrective and Preventive Actions (CAPA)",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Table({
+                            rows: [
+                                new docx.TableRow({
+                                    children: [
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Action Type", bold: true })] }),
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Description", bold: true })] }),
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Owner", bold: true })] }),
+                                        new docx.TableCell({ children: [new docx.Paragraph({ text: "Target Date", bold: true })] })
+                                    ]
+                                }),
+                                ...capaRows
+                            ]
+                        }),
+                        new docx.Paragraph({ text: "" }),
+
+                        new docx.Paragraph({
+                            text: "Section 6: Lessons Learned",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Paragraph({
+                            text: "What went well?",
+                            heading: docx.HeadingLevel.HEADING_2
+                        }),
+                        new docx.Paragraph({ text: document.getElementById('wentWell').value }),
+                        new docx.Paragraph({
+                            text: "What could be improved?",
+                            heading: docx.HeadingLevel.HEADING_2
+                        }),
+                        new docx.Paragraph({ text: document.getElementById('improvements').value }),
+                        new docx.Paragraph({ text: "" }),
+
+                        new docx.Paragraph({
+                            text: "Section 7: Sign-off",
+                            heading: docx.HeadingLevel.HEADING_1
+                        }),
+                        new docx.Paragraph({ text: `RCA Author: ${document.getElementById('rcaAuthor').value}` }),
+                        new docx.Paragraph({ text: `Technical Review: ${document.getElementById('techReview').value}` }),
+                        new docx.Paragraph({ text: `Management Review: ${document.getElementById('mgmtReview').value}` }),
+                        new docx.Paragraph({ text: `Date Finalized: ${document.getElementById('dateFinalized').value}` })
+                    ]
+                }]
+            });
+
+            docx.Packer.toBlob(doc).then(blob => {
+                const fileName = `RCA_${document.getElementById('documentId').value || 'Document'}.docx`;
+                saveAs(blob, fileName);
+            });
+        }
+
+        function copyToClipboard() {
+            const content = document.getElementById('outputContent').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('Content copied to clipboard!');
+            });
+        }
+
+        // Initialize with current date and time
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const dateStr = now.toISOString().substr(0, 10);
+            const docId = `RCA${dateStr.replace(/-/g, '')}-001`;
+            document.getElementById('documentId').value = docId;
+            document.getElementById('dateFinalized').value = dateStr;
+        });
+    </script>
+</body>
+</html>

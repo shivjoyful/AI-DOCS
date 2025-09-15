@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Corporate Runbook Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .multi-line-textarea {
+            min-height: 200px;
+        }
+
+        .step-entry, .check-entry, .contact-entry, .revision-entry, .approval-entry, .distribution-entry {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            align-items: flex-start;
+        }
+
+        .step-entry input, .step-entry textarea, .check-entry input, .contact-entry input, .revision-entry input, .approval-entry input, .distribution-entry input {
+            flex: 1;
+        }
+
+        .add-btn, .remove-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .add-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .generate-section {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .output-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .output-content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .step-entry, .check-entry, .contact-entry, .revision-entry, .approval-entry, .distribution-entry {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Professional Corporate Runbook Generator</h1>
+            <p>Enterprise-Grade Technical Documentation with SOP-Level Professional Formatting</p>
+        </div>
+
+        <div class="form-container">
+            <form id="runbookForm">
+                <!-- Document Header Section -->
+                <div class="section">
+                    <h2>Document Header & Corporate Branding</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="companyName">Company Name:</label>
+                            <input type="text" id="companyName" placeholder="Your Company Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="documentTitle">Technical Runbook Title:</label>
+                            <input type="text" id="documentTitle" placeholder="ADFS Certificate Renewal">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="documentId">Document ID:</label>
+                            <input type="text" id="documentId" placeholder="RUNBOOK-AD-001">
+                        </div>
+                        <div class="form-group">
+                            <label for="version">Version:</label>
+                            <input type="text" id="version" placeholder="1.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="department">Department:</label>
+                            <input type="text" id="department" placeholder="IT Operations">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="effectiveDate">Effective Date:</label>
+                            <input type="date" id="effectiveDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewDate">Review Date:</label>
+                            <input type="date" id="reviewDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="approvedBy">Approved By:</label>
+                            <input type="text" id="approvedBy" placeholder="Manager Name, Title">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Control Section -->
+                <div class="section">
+                    <h2>Document Control & Version History</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="primaryAuthor">Primary Author:</label>
+                            <input type="text" id="primaryAuthor" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="classification">Classification:</label>
+                            <select id="classification">
+                                <option value="Internal">Internal</option>
+                                <option value="Confidential">Confidential</option>
+                                <option value="Restricted">Restricted</option>
+                                <option value="Public">Public</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3>Version History</h3>
+                    <div id="versionHistory">
+                        <div class="revision-entry">
+                            <input type="text" placeholder="Version" style="flex: 0 0 100px;">
+                            <input type="date" style="flex: 0 0 150px;">
+                            <input type="text" placeholder="Changes Made" style="flex: 2;">
+                            <input type="text" placeholder="Approved By" style="flex: 1;">
+                            <button type="button" class="remove-btn" onclick="removeRevisionEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addVersionEntry()">Add Version Entry</button>
+
+                    <h3>Distribution List</h3>
+                    <div id="distributionList">
+                        <div class="distribution-entry">
+                            <input type="text" placeholder="Stakeholder/Department" style="flex: 1;">
+                            <input type="text" placeholder="Role/Responsibility" style="flex: 1;">
+                            <button type="button" class="remove-btn" onclick="removeDistributionEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addDistributionEntry()">Add Distribution Entry</button>
+                </div>
+
+                <!-- Purpose & Scope Section -->
+                <div class="section">
+                    <h2>1. PURPOSE & SCOPE</h2>
+                    <div class="form-group">
+                        <label for="purpose">Purpose:</label>
+                        <textarea id="purpose" placeholder="Define the technical objective and business reason for this runbook procedure."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="scope">Scope:</label>
+                        <textarea id="scope" placeholder="Define what systems, environments, or infrastructure this runbook applies to."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="impactLevel">Impact Level:</label>
+                            <select id="impactLevel">
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expectedDowntime">Expected Downtime:</label>
+                            <input type="text" id="expectedDowntime" placeholder="5-10 minutes">
+                        </div>
+                        <div class="form-group">
+                            <label for="changeRequest">Related Change Request:</label>
+                            <input type="text" id="changeRequest" placeholder="CHG-001234">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsibilities Section -->
+                <div class="section">
+                    <h2>2. RESPONSIBILITIES</h2>
+                    <div id="responsibilities">
+                        <div class="contact-entry">
+                            <input type="text" placeholder="Team/Role" style="flex: 1;">
+                            <input type="text" placeholder="Primary Contact" style="flex: 1;">
+                            <input type="text" placeholder="Responsibilities" style="flex: 2;">
+                            <button type="button" class="remove-btn" onclick="removeContactEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addResponsibilityEntry()">Add Responsibility</button>
+                </div>
+
+                <!-- Prerequisites Section -->
+                <div class="section">
+                    <h2>3. PREREQUISITES & PRE-EXECUTION CHECKLIST</h2>
+                    <div class="form-group">
+                        <label for="approvals">Approvals Required:</label>
+                        <textarea id="approvals" placeholder="CAB approval, management sign-off, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="communications">Communications:</label>
+                        <textarea id="communications" placeholder="Stakeholder notifications, service desk briefing, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="accessRights">Access Rights & Permissions:</label>
+                        <textarea id="accessRights" placeholder="Required admin rights, service accounts, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="toolsRequired">Tools & Software Required:</label>
+                        <textarea id="toolsRequired" placeholder="RSAT, PowerShell modules, specific tools, etc."></textarea>
+                    </div>
+
+                    <h3>Pre-Execution Validation Checklist</h3>
+                    <div id="preValidationChecks">
+                        <div class="check-entry">
+                            <input type="text" placeholder="Validation Check Description" style="flex: 3;">
+                            <input type="text" placeholder="Expected Result/Status" style="flex: 2;">
+                            <button type="button" class="remove-btn" onclick="removeCheckEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addValidationCheck()">Add Validation Check</button>
+
+                    <div class="form-group">
+                        <label for="backupProcedures">Backup & Snapshot Procedures:</label>
+                        <textarea id="backupProcedures" placeholder="Detailed backup and snapshot procedures before execution."></textarea>
+                    </div>
+                </div>
+
+                <!-- Execution Procedures Section -->
+                <div class="section">
+                    <h2>4. EXECUTION PROCEDURES</h2>
+                    <div class="form-group">
+                        <label for="preExecutionBaseline">Pre-Execution Baseline & Documentation:</label>
+                        <textarea id="preExecutionBaseline" class="multi-line-textarea" placeholder="Commands and procedures to document current state before execution."></textarea>
+                    </div>
+
+                    <h3>Step-by-Step Execution Instructions</h3>
+                    <div id="executionSteps">
+                        <div class="step-entry">
+                            <input type="number" placeholder="Step #" style="flex: 0 0 80px;">
+                            <textarea placeholder="Command/Action (Multi-line supported)" style="flex: 3; min-height: 80px; resize: vertical;"></textarea>
+                            <textarea placeholder="Expected Output/Result (Multi-line supported)" style="flex: 2; min-height: 80px; resize: vertical;"></textarea>
+                            <button type="button" class="remove-btn" onclick="removeStepEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addExecutionStep()">Add Execution Step</button>
+
+                    <div class="form-group">
+                        <label for="postExecutionValidation">Post-Execution Validation & Testing:</label>
+                        <textarea id="postExecutionValidation" class="multi-line-textarea" placeholder="Comprehensive validation procedures to confirm successful execution."></textarea>
+                    </div>
+                </div>
+
+                <!-- Rollback Procedures Section -->
+                <div class="section">
+                    <h2>5. ROLLBACK PROCEDURES</h2>
+                    <div class="form-group">
+                        <label for="rollbackTriggers">Rollback Trigger Conditions:</label>
+                        <textarea id="rollbackTriggers" placeholder="Specific conditions that warrant rollback execution."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="rollbackSteps">Rollback Execution Steps:</label>
+                        <textarea id="rollbackSteps" class="multi-line-textarea" placeholder="Step-by-step rollback procedures to restore previous state."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postRollbackValidation">Post-Rollback Validation:</label>
+                        <textarea id="postRollbackValidation" placeholder="Validation procedures to confirm successful rollback."></textarea>
+                    </div>
+                </div>
+
+                <!-- Quality & Safety Section -->
+                <div class="section">
+                    <h2>6. SAFETY CONSIDERATIONS & QUALITY CONTROLS</h2>
+                    <div class="form-group">
+                        <label for="safetyConsiderations">Safety Considerations:</label>
+                        <textarea id="safetyConsiderations" placeholder="Safety measures, risk mitigation, and protective procedures."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="qualityControls">Quality Controls & Monitoring:</label>
+                        <textarea id="qualityControls" placeholder="Quality assurance measures and post-execution monitoring requirements."></textarea>
+                    </div>
+                </div>
+
+                <!-- References & Appendices Section -->
+                <div class="section">
+                    <h2>7. REFERENCES & APPENDICES</h2>
+                    <div class="form-group">
+                        <label for="references">References & Documentation:</label>
+                        <textarea id="references" placeholder="Links to related documentation, policies, and procedures."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="troubleshooting">Troubleshooting Guide:</label>
+                        <textarea id="troubleshooting" class="multi-line-textarea" placeholder="Common issues, error messages, and resolution procedures."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="glossary">Technical Glossary:</label>
+                        <textarea id="glossary" placeholder="Definitions of technical terms and acronyms used in this document."></textarea>
+                    </div>
+                </div>
+
+                <!-- Approval Section -->
+                <div class="section">
+                    <h2>8. DOCUMENT APPROVAL & SIGN-OFF</h2>
+                    <div id="documentApprovals">
+                        <div class="approval-entry">
+                            <input type="text" placeholder="Role/Title" style="flex: 1;">
+                            <input type="text" placeholder="Name" style="flex: 1;">
+                            <input type="text" placeholder="Signature/Approval" style="flex: 1;">
+                            <input type="date" style="flex: 0 0 150px;">
+                            <button type="button" class="remove-btn" onclick="removeApprovalEntry(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addApprovalEntry()">Add Approval Entry</button>
+                </div>
+            </form>
+
+            <div class="generate-section">
+                <button class="generate-btn" onclick="generateHTML()">Preview Corporate Runbook</button>
+                <button class="generate-btn" onclick="exportHTMLForWord()">Export Professional HTML for Word</button>
+                <button class="generate-btn" onclick="generateDOCX()">Generate DOCX</button>
+            </div>
+
+            <div id="outputSection" class="output-section">
+                <h2>Generated Professional Corporate Runbook</h2>
+                <div id="outputContent" class="output-content"></div>
+                <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+    <script>
+        function addVersionEntry() {
+            const container = document.getElementById('versionHistory');
+            const entry = document.createElement('div');
+            entry.className = 'revision-entry';
+            entry.innerHTML = `
+                <input type="text" placeholder="Version" style="flex: 0 0 100px;">
+                <input type="date" style="flex: 0 0 150px;">
+                <input type="text" placeholder="Changes Made" style="flex: 2;">
+                <input type="text" placeholder="Approved By" style="flex: 1;">
+                <button type="button" class="remove-btn" onclick="removeRevisionEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeRevisionEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function addDistributionEntry() {
+            const container = document.getElementById('distributionList');
+            const entry = document.createElement('div');
+            entry.className = 'distribution-entry';
+            entry.innerHTML = `
+                <input type="text" placeholder="Stakeholder/Department" style="flex: 1;">
+                <input type="text" placeholder="Role/Responsibility" style="flex: 1;">
+                <button type="button" class="remove-btn" onclick="removeDistributionEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeDistributionEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function addResponsibilityEntry() {
+            const container = document.getElementById('responsibilities');
+            const entry = document.createElement('div');
+            entry.className = 'contact-entry';
+            entry.innerHTML = `
+                <input type="text" placeholder="Team/Role" style="flex: 1;">
+                <input type="text" placeholder="Primary Contact" style="flex: 1;">
+                <input type="text" placeholder="Responsibilities" style="flex: 2;">
+                <button type="button" class="remove-btn" onclick="removeContactEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeContactEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function addValidationCheck() {
+            const container = document.getElementById('preValidationChecks');
+            const entry = document.createElement('div');
+            entry.className = 'check-entry';
+            entry.innerHTML = `
+                <input type="text" placeholder="Validation Check Description" style="flex: 3;">
+                <input type="text" placeholder="Expected Result/Status" style="flex: 2;">
+                <button type="button" class="remove-btn" onclick="removeCheckEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeCheckEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function addExecutionStep() {
+            const container = document.getElementById('executionSteps');
+            const stepNumber = container.children.length + 1;
+            const entry = document.createElement('div');
+            entry.className = 'step-entry';
+            entry.innerHTML = `
+                <input type="number" placeholder="${stepNumber}" value="${stepNumber}" style="flex: 0 0 80px;">
+                <textarea placeholder="Command/Action (Multi-line supported)" style="flex: 3; min-height: 80px; resize: vertical;"></textarea>
+                <textarea placeholder="Expected Output/Result (Multi-line supported)" style="flex: 2; min-height: 80px; resize: vertical;"></textarea>
+                <button type="button" class="remove-btn" onclick="removeStepEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeStepEntry(button) {
+            button.parentElement.remove();
+            // Renumber steps
+            const steps = document.querySelectorAll('#executionSteps .step-entry input[type="number"]');
+            steps.forEach((step, index) => {
+                step.value = index + 1;
+                step.placeholder = index + 1;
+            });
+        }
+
+        function addApprovalEntry() {
+            const container = document.getElementById('documentApprovals');
+            const entry = document.createElement('div');
+            entry.className = 'approval-entry';
+            entry.innerHTML = `
+                <input type="text" placeholder="Role/Title" style="flex: 1;">
+                <input type="text" placeholder="Name" style="flex: 1;">
+                <input type="text" placeholder="Signature/Approval" style="flex: 1;">
+                <input type="date" style="flex: 0 0 150px;">
+                <button type="button" class="remove-btn" onclick="removeApprovalEntry(this)">Remove</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeApprovalEntry(button) {
+            button.parentElement.remove();
+        }
+
+        function collectData(containerId, dataMapping) {
+            const entries = document.querySelectorAll(`#${containerId} > div`);
+            const data = [];
+            entries.forEach(entry => {
+                const inputs = entry.querySelectorAll('input, textarea');
+                if (inputs[0].value.trim()) {
+                    const item = {};
+                    dataMapping.forEach((field, index) => {
+                        item[field] = inputs[index].value;
+                    });
+                    data.push(item);
+                }
+            });
+            return data;
+        }
+
+        function generateHTML() {
+            // Collect all data
+            const versionHistory = collectData('versionHistory', ['version', 'date', 'changes', 'approvedBy']);
+            const distributionList = collectData('distributionList', ['stakeholder', 'role']);
+            const responsibilities = collectData('responsibilities', ['team', 'contact', 'responsibilities']);
+            const validationChecks = collectData('preValidationChecks', ['description', 'expectedResult']);
+            const executionSteps = collectData('executionSteps', ['stepNumber', 'command', 'expectedOutput']);
+            const approvals = collectData('documentApprovals', ['role', 'name', 'signature', 'date']);
+
+            const html = `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #000;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="font-size: 24pt; font-weight: bold; margin: 0;">${document.getElementById('companyName').value || '[Company Name]'}</h1>
+                        <h2 style="font-size: 18pt; margin: 10px 0;">TECHNICAL RUNBOOK</h2>
+                        <h3 style="font-size: 16pt; margin: 10px 0;">${document.getElementById('documentTitle').value || '[Document Title]'}</h3>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr><td style="font-weight: bold; padding: 5px;">Document ID:</td><td style="padding: 5px;">${document.getElementById('documentId').value || '[Document ID]'}</td></tr>
+                        <tr><td style="font-weight: bold; padding: 5px;">Version:</td><td style="padding: 5px;">${document.getElementById('version').value || '[Version]'}</td></tr>
+                        <tr><td style="font-weight: bold; padding: 5px;">Department:</td><td style="padding: 5px;">${document.getElementById('department').value || '[Department]'}</td></tr>
+                        <tr><td style="font-weight: bold; padding: 5px;">Effective Date:</td><td style="padding: 5px;">${document.getElementById('effectiveDate').value || '[Effective Date]'}</td></tr>
+                        <tr><td style="font-weight: bold; padding: 5px;">Review Date:</td><td style="padding: 5px;">${document.getElementById('reviewDate').value || '[Review Date]'}</td></tr>
+                        <tr><td style="font-weight: bold; padding: 5px;">Approved By:</td><td style="padding: 5px;">${document.getElementById('approvedBy').value || '[Approved By]'}</td></tr>
+                    </table>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">DOCUMENT CONTROL AND VERSION HISTORY</h2>
+                    ${versionHistory.length > 0 ? `
+                        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Version</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Changes Made</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Approved By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${versionHistory.map(v => `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${v.version}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${v.date}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${v.changes}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${v.approvedBy}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<p><em>No version history entries</em></p>'}
+
+                    <h3>DISTRIBUTION LIST</h3>
+                    ${distributionList.length > 0 ? `
+                        <ul>
+                            ${distributionList.map(d => `<li>${d.stakeholder} - ${d.role}</li>`).join('')}
+                        </ul>
+                    ` : '<p><em>No distribution list entries</em></p>'}
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">1. PURPOSE & SCOPE</h2>
+                    <p><strong>Purpose:</strong> ${document.getElementById('purpose').value || '[Purpose]'}</p>
+                    <p><strong>Scope:</strong> ${document.getElementById('scope').value || '[Scope]'}</p>
+                    <p><strong>Impact Level:</strong> ${document.getElementById('impactLevel').value || '[Impact Level]'}</p>
+                    <p><strong>Expected Downtime:</strong> ${document.getElementById('expectedDowntime').value || '[Expected Downtime]'}</p>
+                    <p><strong>Related Change Request:</strong> ${document.getElementById('changeRequest').value || '[Change Request]'}</p>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">2. RESPONSIBILITIES</h2>
+                    ${responsibilities.length > 0 ? `
+                        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Team/Role</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Primary Contact</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Responsibilities</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${responsibilities.map(r => `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${r.team}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${r.contact}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${r.responsibilities}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<p><em>No responsibilities defined</em></p>'}
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">3. PREREQUISITES & PRE-EXECUTION CHECKLIST</h2>
+                    <h3>Approvals Required:</h3>
+                    <p>${(document.getElementById('approvals').value || '[Approvals Required]').replace(/\n/g, '<br>')}</p>
+                    <h3>Communications:</h3>
+                    <p>${(document.getElementById('communications').value || '[Communications]').replace(/\n/g, '<br>')}</p>
+                    <h3>Access Rights & Permissions:</h3>
+                    <p>${(document.getElementById('accessRights').value || '[Access Rights]').replace(/\n/g, '<br>')}</p>
+                    <h3>Tools & Software Required:</h3>
+                    <p>${(document.getElementById('toolsRequired').value || '[Tools Required]').replace(/\n/g, '<br>')}</p>
+
+                    <h3>Pre-Execution Validation Checklist:</h3>
+                    ${validationChecks.length > 0 ? `
+                        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Validation Check</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Expected Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${validationChecks.map(v => `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${v.description}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${v.expectedResult}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<p><em>No validation checks defined</em></p>'}
+
+                    <h3>Backup & Snapshot Procedures:</h3>
+                    <p>${(document.getElementById('backupProcedures').value || '[Backup Procedures]').replace(/\n/g, '<br>')}</p>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">4. EXECUTION PROCEDURES</h2>
+                    <h3>Pre-Execution Baseline & Documentation:</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; margin: 15px 0;">
+                        <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace;">${document.getElementById('preExecutionBaseline').value || '[Pre-Execution Baseline]'}</pre>
+                    </div>
+
+                    <h3>Step-by-Step Execution Instructions:</h3>
+                    ${executionSteps.length > 0 ? executionSteps.map(step => `
+                        <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-left: 4px solid #27ae60;">
+                            <h4>Step ${step.stepNumber}:</h4>
+                            <div style="margin: 10px 0;">
+                                <strong>Command/Action:</strong>
+                                <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; background: white; padding: 10px; border: 1px solid #ddd;">${step.command}</pre>
+                            </div>
+                            <div style="margin: 10px 0;">
+                                <strong>Expected Output:</strong>
+                                <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; background: white; padding: 10px; border: 1px solid #ddd;">${step.expectedOutput}</pre>
+                            </div>
+                        </div>
+                    `).join('') : '<p><em>No execution steps defined</em></p>'}
+
+                    <h3>Post-Execution Validation & Testing:</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; margin: 15px 0;">
+                        <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace;">${document.getElementById('postExecutionValidation').value || '[Post-Execution Validation]'}</pre>
+                    </div>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">5. ROLLBACK PROCEDURES</h2>
+                    <h3>Rollback Trigger Conditions:</h3>
+                    <p>${(document.getElementById('rollbackTriggers').value || '[Rollback Triggers]').replace(/\n/g, '<br>')}</p>
+                    <h3>Rollback Execution Steps:</h3>
+                    <div style="background: #fff5f5; padding: 15px; border-left: 4px solid #e74c3c; margin: 15px 0;">
+                        <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace;">${document.getElementById('rollbackSteps').value || '[Rollback Steps]'}</pre>
+                    </div>
+                    <h3>Post-Rollback Validation:</h3>
+                    <p>${(document.getElementById('postRollbackValidation').value || '[Post-Rollback Validation]').replace(/\n/g, '<br>')}</p>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">6. SAFETY CONSIDERATIONS & QUALITY CONTROLS</h2>
+                    <h3>Safety Considerations:</h3>
+                    <p>${(document.getElementById('safetyConsiderations').value || '[Safety Considerations]').replace(/\n/g, '<br>')}</p>
+                    <h3>Quality Controls & Monitoring:</h3>
+                    <p>${(document.getElementById('qualityControls').value || '[Quality Controls]').replace(/\n/g, '<br>')}</p>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">7. REFERENCES & APPENDICES</h2>
+                    <h3>References & Documentation:</h3>
+                    <p>${(document.getElementById('references').value || '[References]').replace(/\n/g, '<br>')}</p>
+                    <h3>Troubleshooting Guide:</h3>
+                    <div style="background: #fff8e1; padding: 15px; border-left: 4px solid #ff9800; margin: 15px 0;">
+                        <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace;">${document.getElementById('troubleshooting').value || '[Troubleshooting Guide]'}</pre>
+                    </div>
+                    <h3>Technical Glossary:</h3>
+                    <p>${(document.getElementById('glossary').value || '[Technical Glossary]').replace(/\n/g, '<br>')}</p>
+
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px;">8. DOCUMENT APPROVAL & SIGN-OFF</h2>
+                    ${approvals.length > 0 ? `
+                        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Role</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Name</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Signature</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${approvals.map(a => `
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${a.role}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${a.name}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${a.signature}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">${a.date}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<p><em>No document approvals defined</em></p>'}
+
+                    <div style="margin-top: 30px; text-align: center; font-size: 10pt; color: #666;">
+                        © ${new Date().getFullYear()} ${document.getElementById('companyName').value || '[Company Name]'} | Generated on ${new Date().toLocaleDateString()} | This document is controlled, and any printed copies are uncontrolled
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('outputContent').innerHTML = html;
+            document.getElementById('outputSection').style.display = 'block';
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function exportHTMLForWord() {
+            // Collect all data (reusing the same logic as generateHTML)
+            const versionHistory = collectData('versionHistory', ['version', 'date', 'changes', 'approvedBy']);
+            const distributionList = collectData('distributionList', ['stakeholder', 'role']);
+            const responsibilities = collectData('responsibilities', ['team', 'contact', 'responsibilities']);
+            const validationChecks = collectData('preValidationChecks', ['description', 'expectedResult']);
+            const executionSteps = collectData('executionSteps', ['stepNumber', 'command', 'expectedOutput']);
+            const approvals = collectData('documentApprovals', ['role', 'name', 'signature', 'date']);
+
+            const wordCompatibleHTML = `<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset="utf-8">
+    <title>Professional Corporate Runbook</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>90</w:Zoom>
+            <w:DoNotPromptForConvert/>
+            <w:DoNotShowRevisions/>
+            <w:DoNotPrintRevisions/>
+            <w:DoNotShowMarkup/>
+            <w:DoNotShowComments/>
+            <w:DoNotShowInsertionsAndDeletions/>
+            <w:DoNotShowPropertyChanges/>
+            <w:DoNotShowFormattingMarks/>
+            <w:DoNotShowOutline/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        @page {
+            size: A4;
+            margin: 2.54cm 2.54cm 2.54cm 2.54cm;
+            mso-header-margin: 1.27cm;
+            mso-footer-margin: 1.27cm;
+        }
+        
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.15;
+            margin: 0;
+            padding: 0;
+            color: #000000;
+            background: white;
+        }
+        
+        .document {
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 0 12pt 0;
+            color: #2c3e50;
+            page-break-after: avoid;
+        }
+        
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 18pt 0 12pt 0;
+            color: #2c3e50;
+            border-bottom: 1pt solid #cccccc;
+            padding-bottom: 6pt;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 12pt 0 6pt 0;
+            color: #2c3e50;
+            page-break-after: avoid;
+        }
+        
+        h4 {
+            font-size: 11pt;
+            font-weight: bold;
+            margin: 8pt 0 4pt 0;
+            color: #2c3e50;
+        }
+        
+        p {
+            margin: 6pt 0;
+            text-align: justify;
+        }
+        
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12pt 0;
+            font-size: 11pt;
+        }
+        
+        .header-table td {
+            padding: 6pt 8pt;
+            border: 1pt solid #666666;
+            vertical-align: top;
+        }
+        
+        .header-table .label {
+            font-weight: bold;
+            background-color: #f1f1f1;
+            width: 30%;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12pt 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        
+        table.break-inside {
+            page-break-inside: auto;
+        }
+        
+        th, td {
+            border: 1pt solid #666666;
+            padding: 6pt 8pt;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .no-break {
+            page-break-inside: avoid;
+        }
+        
+        .step-box {
+            margin: 8pt 0;
+            padding: 12pt;
+            background-color: #f8f9fa;
+            border-left: 4pt solid #27ae60;
+            border-radius: 4pt;
+            page-break-inside: avoid;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #ffffff;
+            border: 1pt solid #dddddd;
+            padding: 8pt;
+            margin: 6pt 0;
+            white-space: pre-wrap;
+            font-size: 9pt;
+        }
+        
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4pt solid #3498db;
+            padding: 12pt;
+            margin: 12pt 0;
+            page-break-inside: avoid;
+        }
+        
+        .warning-box {
+            background-color: #fff5f5;
+            border-left: 4pt solid #e74c3c;
+            padding: 12pt;
+            margin: 12pt 0;
+            page-break-inside: avoid;
+        }
+        
+        .footer {
+            margin-top: 30pt;
+            text-align: center;
+            font-size: 9pt;
+            color: #666666;
+            border-top: 1pt solid #cccccc;
+            padding-top: 12pt;
+        }
+        
+        @media print {
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <div class="text-center">
+            <h1>${document.getElementById('companyName').value || '[Company Name]'}</h1>
+            <h2 style="border: none; margin: 6pt 0;">TECHNICAL RUNBOOK</h2>
+            <h3 style="margin: 6pt 0;">${document.getElementById('documentTitle').value || '[Document Title]'}</h3>
+        </div>
+
+        <table class="header-table">
+            <tr><td class="label">Document ID:</td><td>${document.getElementById('documentId').value || '[Document ID]'}</td></tr>
+            <tr><td class="label">Version:</td><td>${document.getElementById('version').value || '[Version]'}</td></tr>
+            <tr><td class="label">Department:</td><td>${document.getElementById('department').value || '[Department]'}</td></tr>
+            <tr><td class="label">Effective Date:</td><td>${document.getElementById('effectiveDate').value || '[Effective Date]'}</td></tr>
+            <tr><td class="label">Review Date:</td><td>${document.getElementById('reviewDate').value || '[Review Date]'}</td></tr>
+            <tr><td class="label">Approved By:</td><td>${document.getElementById('approvedBy').value || '[Approved By]'}</td></tr>
+        </table>
+
+        <h2>DOCUMENT CONTROL AND VERSION HISTORY</h2>
+        ${versionHistory.length > 0 ? `
+            <table class="no-break">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Version</th>
+                        <th style="width: 15%;">Date</th>
+                        <th style="width: 45%;">Changes Made</th>
+                        <th style="width: 25%;">Approved By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${versionHistory.map(v => `
+                        <tr>
+                            <td class="text-center">${v.version}</td>
+                            <td class="text-center">${v.date}</td>
+                            <td>${v.changes}</td>
+                            <td>${v.approvedBy}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        ` : '<p><em>No version history entries</em></p>'}
+
+        <h3>DISTRIBUTION LIST</h3>
+        <p>This document is distributed to the following stakeholders:</p>
+        ${distributionList.length > 0 ? `
+            <ul>
+                ${distributionList.map(d => `<li>${d.stakeholder} - ${d.role}</li>`).join('')}
+            </ul>
+        ` : '<p><em>No distribution list entries</em></p>'}
+
+        <h2>1. PURPOSE &amp; SCOPE</h2>
+        <p><strong>Purpose:</strong> ${document.getElementById('purpose').value || '[Purpose]'}</p>
+        <p><strong>Scope:</strong> ${document.getElementById('scope').value || '[Scope]'}</p>
+        <p><strong>Impact Level:</strong> ${document.getElementById('impactLevel').value || '[Impact Level]'}</p>
+        <p><strong>Expected Downtime:</strong> ${document.getElementById('expectedDowntime').value || '[Expected Downtime]'}</p>
+        <p><strong>Related Change Request:</strong> ${document.getElementById('changeRequest').value || '[Change Request]'}</p>
+
+        <h2>2. RESPONSIBILITIES</h2>
+        ${responsibilities.length > 0 ? `
+            <table class="break-inside">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Team/Role</th>
+                        <th style="width: 25%;">Primary Contact</th>
+                        <th style="width: 50%;">Responsibilities</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${responsibilities.map(r => `
+                        <tr>
+                            <td>${r.team}</td>
+                            <td>${r.contact}</td>
+                            <td>${r.responsibilities}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        ` : '<p><em>No responsibilities defined</em></p>'}
+
+        <h2>3. PREREQUISITES &amp; PRE-EXECUTION CHECKLIST</h2>
+        <h3>Approvals Required:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('approvals').value || '[Approvals Required]').replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        <h3>Communications:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('communications').value || '[Communications]').replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        <h3>Access Rights &amp; Permissions:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('accessRights').value || '[Access Rights]').replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        <h3>Tools &amp; Software Required:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('toolsRequired').value || '[Tools Required]').replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <h3>Pre-Execution Validation Checklist:</h3>
+        ${validationChecks.length > 0 ? `
+            <table class="no-break">
+                <thead>
+                    <tr>
+                        <th style="width: 60%;">Validation Check</th>
+                        <th style="width: 40%;">Expected Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${validationChecks.map(v => `
+                        <tr>
+                            <td>${v.description}</td>
+                            <td>${v.expectedResult}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        ` : '<p><em>No validation checks defined</em></p>'}
+
+        <h3>Backup &amp; Snapshot Procedures:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('backupProcedures').value || '[Backup Procedures]').replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <h2>4. EXECUTION PROCEDURES</h2>
+        <h3>Pre-Execution Baseline &amp; Documentation:</h3>
+        <div class="info-box">
+            <div class="code-block">${document.getElementById('preExecutionBaseline').value || '[Pre-Execution Baseline]'}</div>
+        </div>
+
+        <h3>Step-by-Step Execution Instructions:</h3>
+        ${executionSteps.length > 0 ? executionSteps.map(step => `
+            <div class="step-box">
+                <h4>Step ${step.stepNumber}:</h4>
+                <p><strong>Command/Action:</strong></p>
+                <div class="code-block">${step.command}</div>
+                <p><strong>Expected Output:</strong></p>
+                <div class="code-block">${step.expectedOutput}</div>
+            </div>
+        `).join('') : '<p><em>No execution steps defined</em></p>'}
+
+        <h3>Post-Execution Validation &amp; Testing:</h3>
+        <div class="info-box">
+            <div class="code-block">${document.getElementById('postExecutionValidation').value || '[Post-Execution Validation]'}</div>
+        </div>
+
+        <h2>5. ROLLBACK PROCEDURES</h2>
+        <h3>Rollback Trigger Conditions:</h3>
+        <div class="warning-box">
+            <p>${(document.getElementById('rollbackTriggers').value || '[Rollback Triggers]').replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        <h3>Rollback Execution Steps:</h3>
+        <div class="warning-box">
+            <div class="code-block">${document.getElementById('rollbackSteps').value || '[Rollback Steps]'}</div>
+        </div>
+        
+        <h3>Post-Rollback Validation:</h3>
+        <div class="warning-box">
+            <p>${(document.getElementById('postRollbackValidation').value || '[Post-Rollback Validation]').replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <h2>6. SAFETY CONSIDERATIONS &amp; QUALITY CONTROLS</h2>
+        <h3>Safety Considerations:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('safetyConsiderations').value || '[Safety Considerations]').replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        <h3>Quality Controls &amp; Monitoring:</h3>
+        <div class="info-box">
+            <p>${(document.getElementById('qualityControls').value || '[Quality Controls]').replace(/\n/g, '<br>')}</p>
+        </div>
+
+        <h2>7. REFERENCES &amp; APPENDICES</h2>
+        <h3>References &amp; Documentation:</h3>
+        <p>${(document.getElementById('references').value || '[References]').replace(/\n/g, '<br>')}</p>
+        
+        <h3>Troubleshooting Guide:</h3>
+        <div class="info-box">
+            <div class="code-block">${document.getElementById('troubleshooting').value || '[Troubleshooting Guide]'}</div>
+        </div>
+        
+        <h3>Technical Glossary:</h3>
+        <p>${(document.getElementById('glossary').value || '[Technical Glossary]').replace(/\n/g, '<br>')}</p>
+
+        <h2>8. DOCUMENT APPROVAL &amp; SIGN-OFF</h2>
+        ${approvals.length > 0 ? `
+            <table class="no-break">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Role</th>
+                        <th style="width: 25%;">Name</th>
+                        <th style="width: 25%;">Signature</th>
+                        <th style="width: 25%;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${approvals.map(a => `
+                        <tr>
+                            <td>${a.role}</td>
+                            <td>${a.name}</td>
+                            <td>${a.signature}</td>
+                            <td class="text-center">${a.date}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        ` : '<p><em>No document approvals defined</em></p>'}
+
+        <div class="footer">
+            © ${new Date().getFullYear()} ${document.getElementById('companyName').value || '[Company Name]'} | Generated on ${new Date().toLocaleDateString()} | This document is controlled, and any printed copies are uncontrolled
+        </div>
+    </div>
+</body>
+</html>`;
+
+            // Create and download the HTML file
+            const blob = new Blob([wordCompatibleHTML], { type: 'text/html;charset=utf-8' });
+            const fileName = `Corporate_Runbook_${(document.getElementById('documentId').value || 'Professional').replace(/[^a-zA-Z0-9]/g, '_')}_WordCompatible.html`;
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            
+            alert('Professional Corporate Runbook HTML exported successfully!\\n\\nTo import into Microsoft Word:\\n1. Open Microsoft Word\\n2. Go to File > Open\\n3. Select "All Files" in the file type dropdown\\n4. Choose the downloaded HTML file\\n5. Word will convert it automatically with perfect A4 corporate formatting!');
+        }
+
+        function generateDOCX() {
+            alert('DOCX generation feature coming soon! Use the HTML export for now - it imports perfectly into Word with professional A4 formatting.');
+        }
+
+        function copyToClipboard() {
+            const content = document.getElementById('outputContent').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('Professional runbook content copied to clipboard!');
+            });
+        }
+
+        // Initialize with current date and sample data
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const todayStr = today.toISOString().substr(0, 10);
+            const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).toISOString().substr(0, 10);
+            
+            document.getElementById('effectiveDate').value = todayStr;
+            document.getElementById('reviewDate').value = nextYear;
+            
+            // Initialize with sample Document ID
+            const docId = `RUNBOOK-${todayStr.replace(/-/g, '')}-001`;
+            document.getElementById('documentId').value = docId;
+            document.getElementById('version').value = '1.0';
+            
+            // Add initial version entry
+            const versionInput = document.querySelector('#versionHistory .revision-entry input[type="text"]');
+            const dateInput = document.querySelector('#versionHistory .revision-entry input[type="date"]');
+            const changesInput = document.querySelector('#versionHistory .revision-entry input[placeholder="Changes Made"]');
+            const approvedInput = document.querySelector('#versionHistory .revision-entry input[placeholder="Approved By"]');
+            
+            if (versionInput) versionInput.value = '1.0';
+            if (dateInput) dateInput.value = todayStr;
+            if (changesInput) changesInput.value = 'Initial version of the document';
+        });
+    </script>
+</body>
+</html>

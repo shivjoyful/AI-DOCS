@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Focus & Utilization Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        .tracking-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .analytics-section {
+            padding: 30px;
+            background: white;
+            border-left: 3px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            height: fit-content;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #3498db;
+        }
+        
+        .section-card.priorities {
+            border-left-color: #e74c3c;
+        }
+        
+        .section-card.worklog {
+            border-left-color: #f39c12;
+        }
+        
+        .section-card.reflection {
+            border-left-color: #27ae60;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .employee-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .employee-info input {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .employee-info input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .priority-item {
+            display: grid;
+            grid-template-columns: 1fr 120px 60px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .priority-item input[type="text"] {
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        
+        .priority-item input[type="number"] {
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .add-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .worklog-entry {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .worklog-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 150px 60px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .worklog-row input, .worklog-row select {
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        
+        .progress-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .progress-row textarea {
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 0.95em;
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .category-manager {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .category-tag {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .category-tag.communication { background: #e74c3c; }
+        .category-tag.administrative { background: #f39c12; }
+        .category-tag.learning { background: #9b59b6; }
+        .category-tag.meeting { background: #1abc9c; }
+        
+        .remove-category {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            font-size: 0.7em;
+        }
+        
+        .utilization-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .utilization-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .utilization-metric:last-child {
+            border-bottom: none;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .chart-bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .chart-fill.deep-focus { background: #3498db; }
+        .chart-fill.communication { background: #e74c3c; }
+        .chart-fill.administrative { background: #f39c12; }
+        .chart-fill.learning { background: #9b59b6; }
+        .chart-fill.meeting { background: #1abc9c; }
+        
+        .reflection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .reflection-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .reflection-item label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .reflection-item textarea {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            resize: vertical;
+            min-height: 80px;
+            font-size: 0.95em;
+        }
+        
+        .export-section {
+            text-align: center;
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .export-btn {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 5px;
+            display: inline-block;
+        }
+        
+        .export-btn:hover {
+            background: #2c3e50;
+        }
+        
+        .blockers-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            margin-top: 10px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-section {
+                position: static;
+            }
+            
+            .worklog-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+            
+            .employee-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Daily Focus & Utilization Tracker</h1>
+            <p>Personal Productivity Tool for Better Time Management & Team Support</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="tracking-section">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">Employee Information</div>
+                    </div>
+                    <div class="employee-info">
+                        <input type="text" id="employeeName" placeholder="Employee Name" />
+                        <input type="date" id="trackingDate" />
+                        <input type="text" id="teamProject" placeholder="Team/Project" />
+                    </div>
+                </div>
+                
+                <div class="section-card priorities">
+                    <div class="section-header">
+                        <div class="section-title">🎯 Daily Focus & Priorities (Morning)</div>
+                    </div>
+                    
+                    <div id="priorities-container">
+                        <div class="priority-item">
+                            <input type="text" placeholder="Priority description..." />
+                            <input type="number" placeholder="Hours" step="0.5" min="0" />
+                            <button class="remove-btn" onclick="removePriority(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addPriority()">+ Add Priority</button>
+                    
+                    <label style="display: block; margin-top: 20px; font-weight: 600; color: #2c3e50;">Potential Blockers (Known in Advance):</label>
+                    <textarea class="blockers-input" id="potentialBlockers" placeholder="List any blockers you can anticipate..."></textarea>
+                </div>
+                
+                <div class="category-manager">
+                    <h3>📋 Customize Categories & Interruptions</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div>
+                            <label>Add Work Category:</label>
+                            <input type="text" id="newCategory" placeholder="e.g., Research, Coding" />
+                            <button class="add-btn" onclick="addCategory()">+ Add</button>
+                        </div>
+                        <div>
+                            <label>Add Interruption Type:</label>
+                            <input type="text" id="newInterruption" placeholder="e.g., Phone call, Urgent email" />
+                            <button class="add-btn" onclick="addInterruption()">+ Add</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <strong>Current Categories:</strong>
+                        <div class="category-tags" id="category-tags">
+                            <div class="category-tag">
+                                Deep Focus
+                                <button class="remove-category" onclick="removeCategory(this)">×</button>
+                            </div>
+                            <div class="category-tag communication">
+                                Communication
+                                <button class="remove-category" onclick="removeCategory(this)">×</button>
+                            </div>
+                            <div class="category-tag administrative">
+                                Administrative
+                                <button class="remove-category" onclick="removeCategory(this)">×</button>
+                            </div>
+                            <div class="category-tag learning">
+                                Learning
+                                <button class="remove-category" onclick="removeCategory(this)">×</button>
+                            </div>
+                            <div class="category-tag meeting">
+                                Meetings
+                                <button class="remove-category" onclick="removeCategory(this)">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-card worklog">
+                    <div class="section-header">
+                        <div class="section-title">📊 Work Log (Track Throughout Day)</div>
+                        <button class="add-btn" onclick="addWorklogEntry()">+ Add Entry</button>
+                    </div>
+                    
+                    <div id="worklog-container">
+                        <div class="worklog-entry">
+                            <div class="worklog-row">
+                                <input type="time" />
+                                <input type="text" placeholder="Key task/project worked on..." />
+                                <select>
+                                    <option value="deep-focus">Deep Focus</option>
+                                    <option value="communication">Communication</option>
+                                    <option value="administrative">Administrative</option>
+                                    <option value="learning">Learning</option>
+                                    <option value="meetings">Meetings</option>
+                                </select>
+                                <button class="remove-btn" onclick="removeWorklogEntry(this)">×</button>
+                            </div>
+                            <div class="progress-row">
+                                <textarea placeholder="Progress made / Outcome achieved..."></textarea>
+                                <select>
+                                    <option value="none">No Interruption</option>
+                                    <option value="urgent-email">Urgent Email</option>
+                                    <option value="manager-request">Manager Request</option>
+                                    <option value="colleague-help">Helped Colleague</option>
+                                    <option value="system-issue">System Issue</option>
+                                    <option value="scheduled-meeting">Scheduled Meeting</option>
+                                    <option value="phone-call">Phone Call</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-card reflection">
+                    <div class="section-header">
+                        <div class="section-title">🎭 End-of-Day Reflection</div>
+                    </div>
+                    
+                    <div class="reflection-grid">
+                        <div class="reflection-item">
+                            <label>Today's Biggest Achievement:</label>
+                            <textarea id="achievement" placeholder="What are you most proud of accomplishing today?"></textarea>
+                        </div>
+                        <div class="reflection-item">
+                            <label>What Could Have Gone Better:</label>
+                            <textarea id="improvements" placeholder="What would you do differently?"></textarea>
+                        </div>
+                        <div class="reflection-item">
+                            <label>Blockers Encountered:</label>
+                            <textarea id="blockers" placeholder="What obstacles came up during the day?"></textarea>
+                        </div>
+                        <div class="reflection-item">
+                            <label>Focus for Tomorrow:</label>
+                            <textarea id="tomorrow" placeholder="What are the key priorities for tomorrow?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analytics-section">
+                <div class="utilization-card">
+                    <h3>📈 Today's Utilization</h3>
+                    <div class="utilization-metric">
+                        <span>Total Logged Time:</span>
+                        <span id="totalTime">0.0 hrs</span>
+                    </div>
+                    <div class="utilization-metric">
+                        <span>Deep Focus Time:</span>
+                        <span id="focusTime">0.0 hrs</span>
+                    </div>
+                    <div class="utilization-metric">
+                        <span>Meeting Time:</span>
+                        <span id="meetingTime">0.0 hrs</span>
+                    </div>
+                    <div class="utilization-metric">
+                        <span>Interruptions:</span>
+                        <span id="interruptionCount">0</span>
+                    </div>
+                    <div class="utilization-metric">
+                        <span>Focus Efficiency:</span>
+                        <span id="focusEfficiency">0%</span>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>📊 Time Distribution</h3>
+                    <div style="margin-bottom: 8px; text-align: left; font-weight: 600;">Deep Focus</div>
+                    <div class="chart-bar">
+                        <div class="chart-fill deep-focus" id="chart-deep-focus" style="width: 0%">0%</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 8px; text-align: left; font-weight: 600;">Communication</div>
+                    <div class="chart-bar">
+                        <div class="chart-fill communication" id="chart-communication" style="width: 0%">0%</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 8px; text-align: left; font-weight: 600;">Administrative</div>
+                    <div class="chart-bar">
+                        <div class="chart-fill administrative" id="chart-administrative" style="width: 0%">0%</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 8px; text-align: left; font-weight: 600;">Learning</div>
+                    <div class="chart-bar">
+                        <div class="chart-fill learning" id="chart-learning" style="width: 0%">0%</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 8px; text-align: left; font-weight: 600;">Meetings</div>
+                    <div class="chart-bar">
+                        <div class="chart-fill meeting" id="chart-meetings" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>🚧 Interruption Analysis</h3>
+                    <div id="interruption-summary">
+                        <div style="text-align: left; margin: 10px 0;">
+                            <strong>Most Common:</strong> <span id="commonInterruption">No data yet</span>
+                        </div>
+                        <div style="text-align: left; margin: 10px 0;">
+                            <strong>Impact on Focus:</strong> <span id="focusImpact">Calculate after logging</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="export-section">
+                    <button class="export-btn" onclick="generateDailyReport()">📄 Daily Report</button>
+                    <button class="export-btn" onclick="exportToCSV()">📊 Export Data</button>
+                    <button class="export-btn" onclick="saveTemplate()">💾 Save Template</button>
+                    <button class="export-btn" onclick="loadTemplate()">📂 Load Template</button>
+                    <input type="file" id="templateFileInput" accept=".json" style="display: none;" onchange="importTemplate(event)" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date by default
+        document.getElementById('trackingDate').value = new Date().toISOString().split('T')[0];
+        
+        function addPriority() {
+            const container = document.getElementById('priorities-container');
+            const priorityItem = document.createElement('div');
+            priorityItem.className = 'priority-item';
+            priorityItem.innerHTML = `
+                <input type="text" placeholder="Priority description..." />
+                <input type="number" placeholder="Hours" step="0.5" min="0" />
+                <button class="remove-btn" onclick="removePriority(this)">×</button>
+            `;
+            container.appendChild(priorityItem);
+        }
+        
+        function removePriority(button) {
+            button.parentElement.remove();
+        }
+        
+        function addCategory() {
+            const newCategory = document.getElementById('newCategory').value.trim();
+            if (newCategory) {
+                const tagsContainer = document.getElementById('category-tags');
+                const tag = document.createElement('div');
+                tag.className = 'category-tag';
+                tag.innerHTML = `
+                    ${newCategory}
+                    <button class="remove-category" onclick="removeCategory(this)">×</button>
+                `;
+                tagsContainer.appendChild(tag);
+                
+                // Add to all category selects
+                const selects = document.querySelectorAll('.worklog-entry select:first-of-type');
+                selects.forEach(select => {
+                    const option = document.createElement('option');
+                    option.value = newCategory.toLowerCase().replace(/\s+/g, '-');
+                    option.textContent = newCategory;
+                    select.appendChild(option);
+                });
+                
+                document.getElementById('newCategory').value = '';
+                updateCharts();
+            }
+        }
+        
+        function addInterruption() {
+            const newInterruption = document.getElementById('newInterruption').value.trim();
+            if (newInterruption) {
+                // Add to all interruption selects
+                const selects = document.querySelectorAll('.worklog-entry select:last-of-type');
+                selects.forEach(select => {
+                    const option = document.createElement('option');
+                    option.value = newInterruption.toLowerCase().replace(/\s+/g, '-');
+                    option.textContent = newInterruption;
+                    select.appendChild(option);
+                });
+                
+                document.getElementById('newInterruption').value = '';
+            }
+        }
+        
+        function removeCategory(button) {
+            const categoryName = button.parentElement.textContent.trim().replace('×', '');
+            button.parentElement.remove();
+            
+            // Remove from all selects
+            const selects = document.querySelectorAll('.worklog-entry select:first-of-type');
+            selects.forEach(select => {
+                const option = select.querySelector(`option[value="${categoryName.toLowerCase().replace(/\s+/g, '-')}"]`);
+                if (option) option.remove();
+            });
+            updateCharts();
+        }
+        
+        function addWorklogEntry() {
+            const container = document.getElementById('worklog-container');
+            const entry = document.createElement('div');
+            entry.className = 'worklog-entry';
+            
+            // Get current categories for the select
+            const categories = Array.from(document.getElementById('category-tags').children)
+                .map(tag => {
+                    const text = tag.textContent.trim().replace('×', '');
+                    const value = text.toLowerCase().replace(/\s+/g, '-');
+                    return { text, value };
+                });
+            
+            entry.innerHTML = `
+                <div class="worklog-row">
+                    <input type="time" onchange="updateCharts()" />
+                    <input type="text" placeholder="Key task/project worked on..." />
+                    <select onchange="updateCharts()">
+                        ${categories.map(cat => `<option value="${cat.value}">${cat.text}</option>`).join('')}
+                    </select>
+                    <button class="remove-btn" onclick="removeWorklogEntry(this)">×</button>
+                </div>
+                <div class="progress-row">
+                    <textarea placeholder="Progress made / Outcome achieved..."></textarea>
+                    <select onchange="updateCharts()">
+                        <option value="none">No Interruption</option>
+                        <option value="urgent-email">Urgent Email</option>
+                        <option value="manager-request">Manager Request</option>
+                        <option value="colleague-help">Helped Colleague</option>
+                        <option value="system-issue">System Issue</option>
+                        <option value="scheduled-meeting">Scheduled Meeting</option>
+                        <option value="phone-call">Phone Call</option>
+                    </select>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+        
+        function removeWorklogEntry(button) {
+            button.closest('.worklog-entry').remove();
+            updateCharts();
+        }
+        
+        function updateCharts() {
+            const entries = document.querySelectorAll('.worklog-entry');
+            const categoryTotals = {};
+            const interruptions = [];
+            let totalMinutes = 0;
+            
+            entries.forEach(entry => {
+                const timeInput = entry.querySelector('input[type="time"]');
+                const categorySelect = entry.querySelector('select:first-of-type');
+                const interruptionSelect = entry.querySelector('select:last-of-type');
+                
+                if (timeInput.value && categorySelect.value) {
+                    // Assume 1 hour per entry if no duration specified
+                    const minutes = 60; // Could be enhanced to calculate from time ranges
+                    totalMinutes += minutes;
+                    
+                    const category = categorySelect.value;
+                    categoryTotals[category] = (categoryTotals[category] || 0) + minutes;
+                    
+                    if (interruptionSelect.value !== 'none') {
+                        interruptions.push(interruptionSelect.value);
+                    }
+                }
+            });
+            
+            // Update utilization metrics
+            const totalHours = totalMinutes / 60;
+            document.getElementById('totalTime').textContent = totalHours.toFixed(1) + ' hrs';
+            
+            const focusMinutes = categoryTotals['deep-focus'] || 0;
+            const focusHours = focusMinutes / 60;
+            document.getElementById('focusTime').textContent = focusHours.toFixed(1) + ' hrs';
+            
+            const meetingMinutes = categoryTotals['meetings'] || 0;
+            const meetingHours = meetingMinutes / 60;
+            document.getElementById('meetingTime').textContent = meetingHours.toFixed(1) + ' hrs';
+            
+            document.getElementById('interruptionCount').textContent = interruptions.length;
+            
+            const focusEfficiency = totalMinutes > 0 ? Math.round((focusMinutes / totalMinutes) * 100) : 0;
+            document.getElementById('focusEfficiency').textContent = focusEfficiency + '%';
+            
+            // Update charts
+            Object.keys(categoryTotals).forEach(category => {
+                const percentage = totalMinutes > 0 ? (categoryTotals[category] / totalMinutes) * 100 : 0;
+                const chartElement = document.getElementById(`chart-${category}`);
+                if (chartElement) {
+                    chartElement.style.width = percentage + '%';
+                    chartElement.textContent = Math.round(percentage) + '%';
+                }
+            });
+            
+            // Update interruption analysis
+            if (interruptions.length > 0) {
+                const interruptionCounts = {};
+                interruptions.forEach(int => {
+                    interruptionCounts[int] = (interruptionCounts[int] || 0) + 1;
+                });
+                
+                const mostCommon = Object.keys(interruptionCounts).reduce((a, b) => 
+                    interruptionCounts[a] > interruptionCounts[b] ? a : b
+                );
+                
+                document.getElementById('commonInterruption').textContent = 
+                    mostCommon.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                document.getElementById('focusImpact').textContent = 
+                    `${interruptions.length} breaks in focus time`;
+            }
+        }
+        
+        function generateDailyReport() {
+            const employeeName = document.getElementById('employeeName').value || 'Employee';
+            const trackingDate = document.getElementById('trackingDate').value;
+            const teamProject = document.getElementById('teamProject').value || 'Not specified';
+            
+            // Collect priorities
+            const priorities = Array.from(document.querySelectorAll('.priority-item')).map(item => {
+                const desc = item.querySelector('input[type="text"]').value;
+                const hours = item.querySelector('input[type="number"]').value;
+                return { desc, hours };
+            }).filter(p => p.desc);
+            
+            // Collect work log
+            const worklog = Array.from(document.querySelectorAll('.worklog-entry')).map(entry => {
+                const time = entry.querySelector('input[type="time"]').value;
+                const task = entry.querySelector('input[type="text"]').value;
+                const category = entry.querySelector('select:first-of-type').value;
+                const progress = entry.querySelector('textarea').value;
+                const interruption = entry.querySelector('select:last-of-type').value;
+                return { time, task, category, progress, interruption };
+            }).filter(w => w.task);
+            
+            let reportContent = `
+                <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px;">
+                    <h1 style="color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px;">
+                        Daily Focus & Utilization Report
+                    </h1>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p><strong>Employee:</strong> ${employeeName}</p>
+                        <p><strong>Date:</strong> ${new Date(trackingDate).toLocaleDateString()}</p>
+                        <p><strong>Team/Project:</strong> ${teamProject}</p>
+                    </div>
+                    
+                    <h2 style="color: #e74c3c; margin-top: 30px;">🎯 Daily Priorities</h2>
+                    <ul style="margin-left: 20px;">
+                        ${priorities.map(p => `<li>${p.desc} (${p.hours || '?'} hours estimated)</li>`).join('')}
+                    </ul>
+                    
+                    <h2 style="color: #f39c12; margin-top: 30px;">📊 Work Log</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <thead>
+                            <tr style="background: #34495e; color: white;">
+                                <th style="padding: 12px; text-align: left;">Time</th>
+                                <th style="padding: 12px; text-align: left;">Task</th>
+                                <th style="padding: 12px; text-align: left;">Category</th>
+                                <th style="padding: 12px; text-align: left;">Interruption</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${worklog.map(w => `
+                                <tr style="border-bottom: 1px solid #ecf0f1;">
+                                    <td style="padding: 12px;">${w.time || 'Not specified'}</td>
+                                    <td style="padding: 12px;">${w.task}</td>
+                                    <td style="padding: 12px;">${w.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                                    <td style="padding: 12px;">${w.interruption === 'none' ? 'None' : w.interruption.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <h2 style="color: #27ae60; margin-top: 30px;">🎭 Daily Reflection</h2>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <p><strong>Biggest Achievement:</strong> ${document.getElementById('achievement').value || 'Not filled'}</p>
+                        <p><strong>Could Have Gone Better:</strong> ${document.getElementById('improvements').value || 'Not filled'}</p>
+                        <p><strong>Blockers Encountered:</strong> ${document.getElementById('blockers').value || 'None reported'}</p>
+                        <p><strong>Focus for Tomorrow:</strong> ${document.getElementById('tomorrow').value || 'Not specified'}</p>
+                    </div>
+                    
+                    <h2 style="color: #9b59b6; margin-top: 30px;">📈 Utilization Summary</h2>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <p><strong>Total Logged Time:</strong> ${document.getElementById('totalTime').textContent}</p>
+                        <p><strong>Deep Focus Time:</strong> ${document.getElementById('focusTime').textContent}</p>
+                        <p><strong>Focus Efficiency:</strong> ${document.getElementById('focusEfficiency').textContent}</p>
+                        <p><strong>Interruptions:</strong> ${document.getElementById('interruptionCount').textContent}</p>
+                    </div>
+                </div>
+            `;
+            
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Daily Report - ${employeeName} - ${trackingDate}</title>
+                    </head>
+                    <body>${reportContent}</body>
+                </html>
+            `);
+        }
+        
+        function exportToCSV() {
+            const employeeName = document.getElementById('employeeName').value || 'Employee';
+            const trackingDate = document.getElementById('trackingDate').value;
+            
+            let csvContent = 'Date,Employee,Time,Task,Category,Progress,Interruption\n';
+            
+            const worklog = document.querySelectorAll('.worklog-entry');
+            worklog.forEach(entry => {
+                const time = entry.querySelector('input[type="time"]').value;
+                const task = entry.querySelector('input[type="text"]').value;
+                const category = entry.querySelector('select:first-of-type').value;
+                const progress = entry.querySelector('textarea').value.replace(/"/g, '""');
+                const interruption = entry.querySelector('select:last-of-type').value;
+                
+                if (task) {
+                    csvContent += `"${trackingDate}","${employeeName}","${time}","${task}","${category}","${progress}","${interruption}"\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${employeeName.replace(/[^a-zA-Z0-9]/g, '_')}_${trackingDate}_utilization.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function saveTemplate() {
+            const data = {
+                categories: Array.from(document.getElementById('category-tags').children).map(tag => 
+                    tag.textContent.trim().replace('×', '')
+                ),
+                interruptions: Array.from(document.querySelectorAll('.worklog-entry select:last-of-type option')).map(opt => 
+                    ({ value: opt.value, text: opt.textContent })
+                )
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'utilization_tracker_template.json';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function loadTemplate() {
+            document.getElementById('templateFileInput').click();
+        }
+        
+        function importTemplate(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Clear existing categories
+                    const categoryTags = document.getElementById('category-tags');
+                    categoryTags.innerHTML = '';
+                    
+                    // Add categories from template
+                    if (data.categories) {
+                        data.categories.forEach(categoryName => {
+                            const tag = document.createElement('div');
+                            tag.className = 'category-tag';
+                            
+                            // Apply appropriate CSS class based on category name
+                            const lowerName = categoryName.toLowerCase();
+                            if (lowerName.includes('communication')) {
+                                tag.classList.add('communication');
+                            } else if (lowerName.includes('administrative')) {
+                                tag.classList.add('administrative');
+                            } else if (lowerName.includes('learning')) {
+                                tag.classList.add('learning');
+                            } else if (lowerName.includes('meeting')) {
+                                tag.classList.add('meeting');
+                            }
+                            
+                            tag.innerHTML = `
+                                ${categoryName}
+                                <button class="remove-category" onclick="removeCategory(this)">×</button>
+                            `;
+                            categoryTags.appendChild(tag);
+                        });
+                        
+                        // Update all category selects in worklog entries
+                        const categorySelects = document.querySelectorAll('.worklog-entry select:first-of-type');
+                        categorySelects.forEach(select => {
+                            select.innerHTML = '';
+                            data.categories.forEach(categoryName => {
+                                const option = document.createElement('option');
+                                option.value = categoryName.toLowerCase().replace(/\s+/g, '-');
+                                option.textContent = categoryName;
+                                select.appendChild(option);
+                            });
+                        });
+                    }
+                    
+                    // Update interruption selects
+                    if (data.interruptions) {
+                        const interruptionSelects = document.querySelectorAll('.worklog-entry select:last-of-type');
+                        interruptionSelects.forEach(select => {
+                            select.innerHTML = '';
+                            data.interruptions.forEach(interruption => {
+                                const option = document.createElement('option');
+                                option.value = interruption.value;
+                                option.textContent = interruption.text;
+                                select.appendChild(option);
+                            });
+                        });
+                    }
+                    
+                    // Update charts to reflect new categories
+                    updateCharts();
+                    
+                    alert('✅ Template loaded successfully! Categories and interruptions have been updated.');
+                    
+                } catch (error) {
+                    alert('❌ Error loading template: Invalid JSON file. Please check the file format.');
+                    console.error('Template import error:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        // Add event listeners to all existing number inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                input.addEventListener('change', updateCharts);
+                input.addEventListener('keyup', updateCharts);
+            });
+            updateCharts();
+        });
+    </script>
+</body>
+</html>
