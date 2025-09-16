@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Technical PPTX Generator V7 - All Issues Fixed</title>
+    
+    <!-- Define fallback function first -->
+    <script>
+        window.loadFallbackPptx = function() {
+            console.log('Loading fallback PptxGenJS...');
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
+            script.onerror = function() {
+                console.log('Loading final fallback...');
+                const script2 = document.createElement('script');
+                script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.11.0/pptxgen.bundle.min.js';
+                script2.onerror = function() {
+                    console.error('All PptxGenJS CDNs failed');
+                    document.getElementById('libraryStatus').textContent = 'Failed to load PptxGenJS';
+                    document.getElementById('libraryStatus').className = 'library-status library-error';
+                    document.getElementById('generateBtn').disabled = true;
+                };
+                document.head.appendChild(script2);
+            };
+            document.head.appendChild(script);
+        };
+    </script>
+    
+    <!-- Try primary CDN with fallback -->
+    <script src="https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" 
+            onerror="loadFallbackPptx()"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .version-badge {
+            background: #8e44ad;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.2em;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h3::before {
+            content: attr(data-icon);
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-label:hover {
+            background: #e3f2fd;
+            border-color: #2980b9;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .file-preview.active {
+            display: block;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .presentation-type {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .type-option {
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .type-option:hover {
+            border-color: #3498db;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .type-option.selected {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        }
+
+        .type-option input[type="radio"] {
+            width: auto;
+            margin-bottom: 10px;
+            transform: scale(1.3);
+        }
+
+        .business-only {
+            display: none;
+        }
+
+        body.business-mode .technical-only {
+            display: none;
+        }
+
+        body.business-mode .business-only {
+            display: block;
+        }
+
+        body.business-mode .form-section {
+            background: linear-gradient(135deg, #fff9e6 0%, #f0f8ff 100%);
+        }
+
+        body.business-mode .form-section h3 {
+            border-bottom-color: #f39c12;
+        }
+
+        body.business-mode .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .slide-customizer {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .slide-header {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-header:hover {
+            background: #2980b9;
+        }
+
+        .slide-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .slide-content.active {
+            display: block;
+        }
+
+        .slide-toggle {
+            font-size: 1.2em;
+        }
+
+        .chart-input {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .chart-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .chart-data-table th,
+        .chart-data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .chart-data-table th {
+            background: #3498db;
+            color: white;
+        }
+
+        .add-data-row {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-data-row:hover {
+            background: #219a52;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 40px auto;
+            min-width: 250px;
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            background: #95a5a6;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .four-column {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .library-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .library-loaded {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .library-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .library-loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .color-picker {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .slide-image-upload {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f1f3f4;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column, .three-column, .four-column, .presentation-type {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="libraryStatus" class="library-status library-loading">Loading PptxGenJS...</div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">Version 7.0 - All Issues Fixed</div>
+            <h1>🚀 Professional Technical PPTX Generator</h1>
+            <p>Create stunning presentations with images, working charts, and proper templates</p>
+        </div>
+
+        <div class="main-content">
+            <form id="pptxForm">
+                <!-- Basic Information -->
+                <div class="form-section" data-icon="📋">
+                    <h3>Basic Information</h3>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="projectTitle">Project/Presentation Title</label>
+                            <input type="text" id="projectTitle" placeholder="e.g., Azure Infrastructure Migration" value="Professional Technical Presentation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName">Company/Organization</label>
+                            <input type="text" id="companyName" placeholder="e.g., TechCorp Solutions" value="Technology Solutions Inc.">
+                        </div>
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="presenter">Presenter Name</label>
+                            <input type="text" id="presenter" placeholder="e.g., John Smith, Solution Architect" value="Technical Solution Architect">
+                        </div>
+                        <div class="form-group">
+                            <label for="audience">Target Audience</label>
+                            <select id="audience">
+                                <option value="technical">Technical Team</option>
+                                <option value="management">Management/Executives</option>
+                                <option value="mixed">Mixed Audience</option>
+                                <option value="client">Client Presentation</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Branding & Media -->
+                <div class="form-section" data-icon="🎨">
+                    <h3>Branding & Visual Design</h3>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="companyLogo">Company Logo</label>
+                            <div class="file-upload">
+                                <input type="file" id="companyLogo" accept="image/*" onchange="handleFileUpload(this, 'logoPreview')">
+                                <label for="companyLogo" class="file-upload-label">
+                                    📎 Click to upload company logo (PNG, JPG, SVG)
+                                </label>
+                            </div>
+                            <div id="logoPreview" class="file-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="backgroundImage">Background Image (Optional)</label>
+                            <div class="file-upload">
+                                <input type="file" id="backgroundImage" accept="image/*" onchange="handleFileUpload(this, 'bgPreview')">
+                                <label for="backgroundImage" class="file-upload-label">
+                                    🖼️ Click to upload background image
+                                </label>
+                            </div>
+                            <div id="bgPreview" class="file-preview"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="four-column">
+                        <div class="form-group">
+                            <label for="primaryColor">Primary Brand Color</label>
+                            <input type="color" id="primaryColor" class="color-picker" value="#3498db">
+                        </div>
+                        <div class="form-group">
+                            <label for="secondaryColor">Secondary Color</label>
+                            <input type="color" id="secondaryColor" class="color-picker" value="#2c3e50">
+                        </div>
+                        <div class="form-group">
+                            <label for="accentColor">Accent Color</label>
+                            <input type="color" id="accentColor" class="color-picker" value="#e74c3c">
+                        </div>
+                        <div class="form-group">
+                            <label for="fontTheme">Font Theme</label>
+                            <select id="fontTheme">
+                                <option value="Calibri">Calibri (Professional)</option>
+                                <option value="Arial">Arial (Clean)</option>
+                                <option value="Times New Roman">Times New Roman (Traditional)</option>
+                                <option value="Segoe UI">Segoe UI (Modern)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presentation Type -->
+                <div class="form-section" data-icon="🎯">
+                    <h3>Presentation Style</h3>
+                    <div class="presentation-type">
+                        <div class="type-option selected" onclick="selectType('technical')">
+                            <input type="radio" name="presentationType" value="technical" id="tech" checked>
+                            <div>
+                                <strong>🔧 Technical Deep Dive</strong><br>
+                                Detailed diagrams, implementation guides, troubleshooting
+                            </div>
+                        </div>
+                        <div class="type-option" onclick="selectType('business')">
+                            <input type="radio" name="presentationType" value="business" id="business">
+                            <div>
+                                <strong>📊 Executive Business</strong><br>
+                                ROI analysis, strategic benefits, market positioning
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart & Data Input -->
+                <div class="form-section" data-icon="📊">
+                    <h3>Chart & Data Configuration</h3>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="chartType">Default Chart Type</label>
+                            <select id="chartType">
+                                <option value="column">Column Chart</option>
+                                <option value="bar">Bar Chart</option>
+                                <option value="line">Line Chart</option>
+                                <option value="pie">Pie Chart</option>
+                                <option value="area">Area Chart</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="includeCharts">Include Charts in Presentation</label>
+                            <select id="includeCharts">
+                                <option value="yes">Yes - Include Charts</option>
+                                <option value="no">No - Text Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-input">
+                        <label><strong>Chart Data (will be used in performance/financial slides)</strong></label>
+                        <table class="chart-data-table" id="chartDataTable">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Current Value</th>
+                                    <th>Target Value</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" value="Performance Score" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><input type="number" value="75" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><input type="number" value="95" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><button type="button" onclick="removeChartRow(this)" class="btn btn-secondary">✖</button></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" value="Cost Reduction %" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><input type="number" value="0" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><input type="number" value="25" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><button type="button" onclick="removeChartRow(this)" class="btn btn-secondary">✖</button></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" value="User Satisfaction" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><input type="number" value="60" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><input type="number" value="90" style="border:none;background:transparent;width:100%;"></td>
+                                    <td><button type="button" onclick="removeChartRow(this)" class="btn btn-secondary">✖</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="add-data-row" onclick="addChartRow()">+ Add Data Row</button>
+                    </div>
+                </div>
+
+                <!-- Slide Configuration -->
+                <div class="form-section" data-icon="📑">
+                    <h3>Slide Configuration</h3>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="slideCount">Number of Slides</label>
+                            <select id="slideCount" onchange="generateSlideCustomizers()">
+                                <option value="5">5 Slides (Quick Overview)</option>
+                                <option value="10" selected>10 Slides (Standard)</option>
+                                <option value="15">15 Slides (Detailed)</option>
+                                <option value="20">20 Slides (Comprehensive)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="slideDepth">Content Depth</label>
+                            <select id="slideDepth">
+                                <option value="overview">High-Level Overview</option>
+                                <option value="detailed" selected>Detailed Technical</option>
+                                <option value="workshop">Workshop Style</option>
+                                <option value="training">Training Material</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Technical Slide Types -->
+                    <div class="technical-only">
+                        <div class="form-group">
+                            <label>Technical Slide Types</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeArchitecture')">
+                                    <input type="checkbox" id="includeArchitecture" checked>
+                                    <label for="includeArchitecture">🗗️ Architecture Diagrams</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeSecurity')">
+                                    <input type="checkbox" id="includeSecurity" checked>
+                                    <label for="includeSecurity">🛡️ Security Details</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeImplementation')">
+                                    <input type="checkbox" id="includeImplementation" checked>
+                                    <label for="includeImplementation">⚡ Implementation Steps</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeTroubleshooting')">
+                                    <input type="checkbox" id="includeTroubleshooting">
+                                    <label for="includeTroubleshooting">🔧 Troubleshooting</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeMonitoring')">
+                                    <input type="checkbox" id="includeMonitoring" checked>
+                                    <label for="includeMonitoring">📊 Monitoring & Performance</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeBestPractices')">
+                                    <input type="checkbox" id="includeBestPractices" checked>
+                                    <label for="includeBestPractices">⭐ Best Practices</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Slide Types -->
+                    <div class="business-only">
+                        <div class="form-group">
+                            <label>Business Slide Types</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeROI')">
+                                    <input type="checkbox" id="includeROI" checked>
+                                    <label for="includeROI">💰 ROI & Financial Analysis</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeStrategy')">
+                                    <input type="checkbox" id="includeStrategy" checked>
+                                    <label for="includeStrategy">🎯 Strategic Alignment</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeRisk')">
+                                    <input type="checkbox" id="includeRisk" checked>
+                                    <label for="includeRisk">⚠️ Risk Assessment</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeCompetitive')">
+                                    <input type="checkbox" id="includeCompetitive">
+                                    <label for="includeCompetitive">📈 Competitive Analysis</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeTimeline')">
+                                    <input type="checkbox" id="includeTimeline" checked>
+                                    <label for="includeTimeline">📅 Timeline & Milestones</label>
+                                </div>
+                                <div class="checkbox-item" onclick="toggleCheckbox('includeStakeholder')">
+                                    <input type="checkbox" id="includeStakeholder" checked>
+                                    <label for="includeStakeholder">👥 Stakeholder Impact</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Slide Customization -->
+                <div class="form-section" data-icon="🎬">
+                    <h3>Individual Slide Customization</h3>
+                    <p style="margin-bottom: 20px; color: #666;">Customize each slide with specific content and images. Click on any slide to expand customization options.</p>
+                    <div id="slideCustomizers">
+                        <!-- Slide customizers will be generated here -->
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="generateSlideCustomizers()">🔄 Refresh Slide Options</button>
+                </div>
+
+                <!-- Business Strategy (Business Only) -->
+                <div class="form-section business-only" data-icon="🎯">
+                    <h3>Business Strategy & Objectives</h3>
+                    <div class="form-group">
+                        <label for="businessObjectives">Primary Business Objectives</label>
+                        <textarea id="businessObjectives" rows="4" placeholder="Describe the key business objectives this initiative will achieve...">Drive digital transformation and operational efficiency through modern technology adoption. Reduce operational costs while improving service delivery and customer satisfaction. Establish competitive advantage through technological innovation and streamlined processes.</textarea>
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label for="marketPosition">Market Position Goal</label>
+                            <select id="marketPosition">
+                                <option value="leader">Market Leader</option>
+                                <option value="challenger" selected>Market Challenger</option>
+                                <option value="follower">Market Follower</option>
+                                <option value="niche">Niche Player</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="competitiveAdvantage">Key Competitive Advantage</label>
+                            <input type="text" id="competitiveAdvantage" placeholder="e.g., Faster time-to-market" value="Advanced technology integration and operational efficiency">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn" id="generateBtn" disabled>🚀 Generate Professional PPTX</button>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="status-message" id="statusMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedType = 'technical';
+        let isGenerating = false;
+        let pptxLibraryLoaded = false;
+        let uploadedImages = {};
+        let slideImages = {};
+
+        // Check if PptxGenJS is loaded
+        function checkLibraryStatus() {
+            const statusEl = document.getElementById('libraryStatus');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            if (typeof PptxGenJS !== 'undefined') {
+                statusEl.textContent = '✅ PptxGenJS Loaded Successfully';
+                statusEl.className = 'library-status library-loaded';
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🚀 Generate Professional PPTX';
+                pptxLibraryLoaded = true;
+                setTimeout(() => {
+                    statusEl.style.opacity = '0';
+                    setTimeout(() => statusEl.style.display = 'none', 300);
+                }, 2000);
+                showStatus('Ready to generate presentations!', 'success');
+            } else {
+                statusEl.textContent = '❌ PptxGenJS Failed to Load - Try Refreshing';
+                statusEl.className = 'library-status library-error';
+                generateBtn.disabled = true;
+                generateBtn.textContent = '❌ Library Not Loaded';
+                console.error('PptxGenJS not available');
+            }
+        }
+
+        // File upload handling for main branding
+        function handleFileUpload(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages[input.id] = e.target.result;
+                    preview.innerHTML = `
+                        <strong>📎 ${file.name}</strong> (${(file.size/1024).toFixed(1)} KB)
+                        <img src="${e.target.result}" class="image-preview" alt="Preview">
+                    `;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+                showStatus(`${file.name} uploaded successfully`, 'success');
+            }
+        }
+
+        // File upload handling for individual slides
+        function handleSlideImageUpload(input, slideNum) {
+            const file = input.files[0];
+            const preview = document.getElementById(`slideImagePreview-${slideNum}`);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    slideImages[`slide-${slideNum}`] = e.target.result;
+                    preview.innerHTML = `
+                        <strong>🖼️ ${file.name}</strong> (${(file.size/1024).toFixed(1)} KB)
+                        <img src="${e.target.result}" class="image-preview" alt="Slide ${slideNum} Preview">
+                    `;
+                    preview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+                showStatus(`Image for slide ${slideNum} uploaded successfully`, 'success');
+            }
+        }
+
+        // Chart data management
+        function addChartRow() {
+            const table = document.getElementById('chartDataTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Category Name" style="border:none;background:transparent;width:100%;"></td>
+                <td><input type="number" placeholder="Current Value" style="border:none;background:transparent;width:100%;"></td>
+                <td><input type="number" placeholder="Target Value" style="border:none;background:transparent;width:100%;"></td>
+                <td><button type="button" onclick="removeChartRow(this)" class="btn btn-secondary">✖</button></td>
+            `;
+            showStatus('Chart data row added', 'info');
+        }
+
+        function removeChartRow(button) {
+            button.closest('tr').remove();
+            showStatus('Chart data row removed', 'info');
+        }
+
+        function getChartData() {
+            const table = document.getElementById('chartDataTable');
+            const rows = table.getElementsByTagName('tbody')[0].rows;
+            const data = [];
+            
+            for (let i = 0; i < rows.length; i++) {
+                const inputs = rows[i].getElementsByTagName('input');
+                if (inputs.length >= 3) {
+                    const category = inputs[0].value || `Category ${i+1}`;
+                    const current = parseFloat(inputs[1].value) || 0;
+                    const target = parseFloat(inputs[2].value) || 0;
+                    
+                    data.push({
+                        category: category,
+                        current: current,
+                        target: target
+                    });
+                }
+            }
+            console.log('Chart data collected:', data);
+            return data;
+        }
+
+        // Generate slide customizers with proper templates and image upload
+        function generateSlideCustomizers() {
+            const slideCount = parseInt(document.getElementById('slideCount').value);
+            const container = document.getElementById('slideCustomizers');
+            container.innerHTML = '';
+
+            // Define enhanced slide templates
+            const technicalSlideTemplates = [
+                { title: 'Introduction & Overview', content: 'Project overview, objectives, and presentation agenda. Technical scope and implementation timeline.', layout: 'title' },
+                { title: 'Current State Analysis', content: 'Existing infrastructure assessment, pain points identification, and performance metrics analysis.', layout: 'content' },
+                { title: 'Technical Architecture', content: 'Proposed solution architecture, system components, and integration patterns.', layout: 'diagram' },
+                { title: 'Security Framework', content: 'Security controls, compliance requirements, and risk mitigation strategies.', layout: 'content' },
+                { title: 'Implementation Strategy', content: 'Deployment phases, migration approach, and technical implementation steps.', layout: 'timeline' },
+                { title: 'Performance Metrics', content: 'Performance benchmarks, monitoring solutions, and alerting mechanisms.', layout: 'chart' },
+                { title: 'Infrastructure Components', content: 'Server specifications, network topology, and hardware requirements.', layout: 'diagram' },
+                { title: 'Best Practices', content: 'Industry standards, recommended configurations, and optimization techniques.', layout: 'content' },
+                { title: 'Troubleshooting Guide', content: 'Common issues, diagnostic procedures, and resolution strategies.', layout: 'content' },
+                { title: 'Next Steps & Timeline', content: 'Project milestones, deliverables, and technical roadmap.', layout: 'timeline' }
+            ];
+
+            const businessSlideTemplates = [
+                { title: 'Executive Summary', content: 'Strategic initiative overview, business case, and expected outcomes.', layout: 'title' },
+                { title: 'Business Objectives', content: 'Strategic goals, success metrics, and alignment with corporate vision.', layout: 'content' },
+                { title: 'Market Analysis', content: 'Market conditions, competitive landscape, and opportunity assessment.', layout: 'chart' },
+                { title: 'Financial Analysis', content: 'Investment requirements, cost-benefit analysis, and ROI projections.', layout: 'chart' },
+                { title: 'Strategic Alignment', content: 'Corporate strategy alignment, stakeholder benefits, and value proposition.', layout: 'content' },
+                { title: 'Risk Assessment', content: 'Risk identification, mitigation strategies, and contingency planning.', layout: 'content' },
+                { title: 'Implementation Timeline', content: 'Project phases, key milestones, and delivery schedule.', layout: 'timeline' },
+                { title: 'Resource Requirements', content: 'Human resources, budget allocation, and capability needs.', layout: 'content' },
+                { title: 'Success Metrics', content: 'KPI definitions, measurement framework, and reporting structure.', layout: 'chart' },
+                { title: 'Recommendations', content: 'Strategic recommendations, next steps, and decision points.', layout: 'content' }
+            ];
+
+            const templates = selectedType === 'technical' ? technicalSlideTemplates : businessSlideTemplates;
+
+            for (let i = 1; i <= slideCount; i++) {
+                const template = templates[(i - 1) % templates.length];
+                
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'slide-customizer';
+                slideDiv.innerHTML = `
+                    <div class="slide-header" onclick="toggleSlideContent(${i})">
+                        <strong>Slide ${i}: ${template.title}</strong>
+                        <span class="slide-toggle" id="toggle-${i}">▼</span>
+                    </div>
+                    <div class="slide-content" id="content-${i}">
+                        <div class="two-column">
+                            <div class="form-group">
+                                <label for="slide-${i}-title">Slide Title</label>
+                                <input type="text" id="slide-${i}-title" value="${template.title}" placeholder="Enter slide title">
+                            </div>
+                            <div class="form-group">
+                                <label for="slide-${i}-layout">Layout Type</label>
+                                <select id="slide-${i}-layout">
+                                    <option value="title" ${template.layout === 'title' ? 'selected' : ''}>Title Slide</option>
+                                    <option value="content" ${template.layout === 'content' ? 'selected' : ''}>Content & Bullet Points</option>
+                                    <option value="chart" ${template.layout === 'chart' ? 'selected' : ''}>Chart/Graph</option>
+                                    <option value="diagram" ${template.layout === 'diagram' ? 'selected' : ''}>Diagram/Image</option>
+                                    <option value="timeline" ${template.layout === 'timeline' ? 'selected' : ''}>Timeline</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="slide-${i}-content">Slide Content</label>
+                            <textarea id="slide-${i}-content" rows="4" placeholder="Enter slide content (bullet points, descriptions, etc.)">${template.content}</textarea>
+                        </div>
+                        
+                        <div class="slide-image-upload">
+                            <label for="slide-${i}-image">Slide Image (Optional)</label>
+                            <div class="file-upload">
+                                <input type="file" id="slide-${i}-image" accept="image/*" onchange="handleSlideImageUpload(this, ${i})">
+                                <label for="slide-${i}-image" class="file-upload-label">
+                                    🖼️ Click to upload image for this slide
+                                </label>
+                            </div>
+                            <div id="slideImagePreview-${i}" class="file-preview"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="slide-${i}-notes">Speaker Notes</label>
+                            <textarea id="slide-${i}-notes" rows="2" placeholder="Add speaker notes for this slide...">Additional talking points and detailed explanations for ${template.title.toLowerCase()}.</textarea>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(slideDiv);
+            }
+            
+            showStatus(`Generated ${slideCount} slide customization options with enhanced templates`, 'success');
+        }
+
+        function toggleSlideContent(slideNum) {
+            const content = document.getElementById(`content-${slideNum}`);
+            const toggle = document.getElementById(`toggle-${slideNum}`);
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('active');
+                toggle.textContent = '▲';
+            }
+        }
+
+        // Utility functions
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+        }
+
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-option').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.type-option').classList.add('selected');
+            document.getElementById(type === 'technical' ? 'tech' : 'business').checked = true;
+            
+            // Toggle body class for dynamic styling
+            if (type === 'business') {
+                document.body.classList.add('business-mode');
+            } else {
+                document.body.classList.remove('business-mode');
+            }
+            
+            // Regenerate slide customizers with appropriate content
+            generateSlideCustomizers();
+            
+            showStatus(`Switched to ${type.charAt(0).toUpperCase() + type.slice(1)} presentation mode`, 'info');
+        }
+
+        // Status and progress functions
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.className = `status-message status-${type}`;
+                statusEl.style.display = 'block';
+                
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+            }
+            console.log(`Status [${type}]: ${message}`);
+        }
+
+        function updateProgress(percent) {
+            const progressEl = document.getElementById('progressFill');
+            if (progressEl) {
+                progressEl.style.width = percent + '%';
+            }
+        }
+
+        // Get comprehensive form data
+        function getComprehensiveFormData() {
+            console.log('Collecting comprehensive form data...');
+            
+            const baseData = {
+                title: document.getElementById('projectTitle')?.value || 'Professional Presentation',
+                company: document.getElementById('companyName')?.value || 'Technology Solutions',
+                presenter: document.getElementById('presenter')?.value || 'Solution Architect',
+                audience: document.getElementById('audience')?.value || 'technical',
+                type: selectedType,
+                slideCount: parseInt(document.getElementById('slideCount')?.value) || 10,
+                slideDepth: document.getElementById('slideDepth')?.value || 'detailed',
+                
+                // Branding
+                primaryColor: document.getElementById('primaryColor')?.value || '#3498db',
+                secondaryColor: document.getElementById('secondaryColor')?.value || '#2c3e50',
+                accentColor: document.getElementById('accentColor')?.value || '#e74c3c',
+                fontTheme: document.getElementById('fontTheme')?.value || 'Calibri',
+                
+                // Images
+                companyLogo: uploadedImages.companyLogo,
+                backgroundImage: uploadedImages.backgroundImage,
+                slideImages: slideImages,
+                
+                // Chart data
+                chartData: getChartData(),
+                chartType: document.getElementById('chartType')?.value || 'column',
+                includeCharts: document.getElementById('includeCharts')?.value === 'yes',
+                
+                slides: []
+            };
+
+            console.log('Base data collected:', baseData);
+
+            // Get individual slide customizations
+            for (let i = 1; i <= baseData.slideCount; i++) {
+                try {
+                    const titleEl = document.getElementById(`slide-${i}-title`);
+                    const layoutEl = document.getElementById(`slide-${i}-layout`);
+                    const contentEl = document.getElementById(`slide-${i}-content`);
+                    const notesEl = document.getElementById(`slide-${i}-notes`);
+                    
+                    const slideData = {
+                        slideNumber: i,
+                        title: titleEl?.value || `Slide ${i}`,
+                        layout: layoutEl?.value || 'content',
+                        content: contentEl?.value || `Default content for slide ${i}`,
+                        notes: notesEl?.value || `Speaker notes for slide ${i}`,
+                        image: slideImages[`slide-${i}`]
+                    };
+                    
+                    baseData.slides.push(slideData);
+                } catch (error) {
+                    console.error(`Error collecting data for slide ${i}:`, error);
+                    baseData.slides.push({
+                        slideNumber: i,
+                        title: `Slide ${i}`,
+                        layout: 'content',
+                        content: `Default content for slide ${i}`,
+                        notes: `Speaker notes for slide ${i}`,
+                        image: null
+                    });
+                }
+            }
+
+            // Add business specific fields
+            if (selectedType === 'business') {
+                baseData.businessObjectives = document.getElementById('businessObjectives')?.value || 'Business objectives not specified';
+                baseData.marketPosition = document.getElementById('marketPosition')?.value || 'challenger';
+                baseData.competitiveAdvantage = document.getElementById('competitiveAdvantage')?.value || 'Competitive advantage not specified';
+            }
+
+            console.log('Final comprehensive form data:', baseData);
+            return baseData;
+        }
+
+        // Form submission
+        document.getElementById('pptxForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!isGenerating && pptxLibraryLoaded) {
+                generatePPTX();
+            } else if (!pptxLibraryLoaded) {
+                showStatus('PptxGenJS library not loaded. Please refresh the page.', 'error');
+            }
+        });
+
+        async function generatePPTX() {
+            if (isGenerating || !pptxLibraryLoaded) return;
+            
+            isGenerating = true;
+            updateProgress(0);
+            showStatus('Initializing PPTX generation...', 'info');
+            document.getElementById('generateBtn').disabled = true;
+            
+            try {
+                // Get form data
+                const formData = getComprehensiveFormData();
+
+                updateProgress(10);
+                showStatus('Creating presentation with custom content and images...', 'info');
+
+                // Initialize PptxGenJS
+                let pptx = new PptxGenJS();
+                pptx.author = formData.presenter;
+                pptx.company = formData.company;
+                pptx.title = formData.title;
+                pptx.subject = `${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Presentation`;
+
+                // Set slide size to standard 16:9
+                pptx.layout = 'LAYOUT_16x9';
+
+                updateProgress(20);
+
+                // Generate slides with proper content and images
+                await createPresentationSlides(pptx, formData);
+
+                updateProgress(90);
+                showStatus('Finalizing presentation...', 'info');
+
+                // Save the presentation
+                const filename = `${formData.title.replace(/[^a-zA-Z0-9]/g, '_')}_${selectedType}_${formData.slideCount}slides.pptx`;
+                await pptx.writeFile(filename);
+
+                updateProgress(100);
+                showStatus('✅ Presentation generated successfully with custom content and images!', 'success');
+
+            } catch (error) {
+                console.error('Error generating PPTX:', error);
+                showStatus('❌ Error generating presentation: ' + error.message, 'error');
+                updateProgress(0);
+            } finally {
+                isGenerating = false;
+                document.getElementById('generateBtn').disabled = false;
+                setTimeout(() => updateProgress(0), 3000);
+            }
+        }
+
+        async function createPresentationSlides(pptx, data) {
+            console.log('Creating slides with data:', data);
+            
+            for (let i = 0; i < data.slides.length; i++) {
+                const slideData = data.slides[i];
+                console.log(`Creating slide ${i + 1}:`, slideData);
+                
+                const slide = pptx.addSlide();
+                
+                // Set slide background
+                slide.background = { color: data.secondaryColor.replace('#', '') };
+                
+                // Add company logo if provided (top right corner)
+                if (data.companyLogo) {
+                    try {
+                        slide.addImage({
+                            data: data.companyLogo,
+                            x: 8.5, y: 0.1, w: 1.2, h: 0.6
+                        });
+                    } catch (error) {
+                        console.log('Could not add company logo:', error);
+                    }
+                }
+                
+                // Create slide based on layout type
+                switch (slideData.layout) {
+                    case 'title':
+                        createTitleSlide(slide, slideData, data);
+                        break;
+                    case 'chart':
+                        createChartSlide(slide, slideData, data);
+                        break;
+                    case 'diagram':
+                        createDiagramSlide(slide, slideData, data);
+                        break;
+                    case 'timeline':
+                        createTimelineSlide(slide, slideData, data);
+                        break;
+                    default:
+                        createContentSlide(slide, slideData, data);
+                }
+                
+                // Add speaker notes if provided
+                if (slideData.notes) {
+                    slide.addNotes(slideData.notes);
+                }
+                
+                updateProgress(30 + (i / data.slides.length) * 50);
+            }
+        }
+
+        function createTitleSlide(slide, slideData, data) {
+            console.log('Creating title slide with data:', slideData);
+            
+            // Main title
+            slide.addText(slideData.title || data.title, {
+                x: 0.5, y: 2.0, w: 9, h: 1.2,
+                fontSize: 44, color: 'FFFFFF', bold: true, align: 'center',
+                fontFace: data.fontTheme
+            });
+            
+            // Subtitle
+            slide.addText(slideData.content || `${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Presentation`, {
+                x: 0.5, y: 3.5, w: 9, h: 0.8,
+                fontSize: 20, color: 'E0E0E0', align: 'center',
+                fontFace: data.fontTheme
+            });
+            
+            // Presenter info
+            slide.addText(`${data.presenter}\n${data.company}\n${new Date().toLocaleDateString()}`, {
+                x: 0.5, y: 5.0, w: 9, h: 1.2,
+                fontSize: 14, color: 'FFFFFF', align: 'center',
+                fontFace: data.fontTheme
+            });
+
+            // Add slide image if provided
+            if (slideData.image) {
+                try {
+                    slide.addImage({
+                        data: slideData.image,
+                        x: 7.0, y: 1.5, w: 2.5, h: 2.0
+                    });
+                } catch (error) {
+                    console.log('Could not add slide image:', error);
+                }
+            }
+        }
+
+        function createContentSlide(slide, slideData, data) {
+            console.log('Creating content slide with data:', slideData);
+            
+            // Slide title
+            slide.addText(slideData.title, {
+                x: 0.5, y: 0.3, w: 9, h: 0.7,
+                fontSize: 28, color: 'FFFFFF', bold: true,
+                fontFace: data.fontTheme
+            });
+            
+            // Determine content area based on whether image is present
+            let contentX = 0.5;
+            let contentW = 9;
+            let contentH = 4.5;
+            
+            if (slideData.image) {
+                contentW = 5.5; // Make room for image
+                // Add slide image
+                try {
+                    slide.addImage({
+                        data: slideData.image,
+                        x: 6.5, y: 1.3, w: 3.0, h: 3.0
+                    });
+                } catch (error) {
+                    console.log('Could not add slide image:', error);
+                    contentW = 9; // Revert to full width if image fails
+                }
+            }
+            
+            // Format content as bullet points if needed
+            let content = slideData.content || 'No content provided';
+            if (content.length > 100 && !content.includes('\n') && !content.includes('•')) {
+                const sentences = content.split('. ');
+                content = sentences.map(sentence => {
+                    if (sentence && !sentence.endsWith('.')) sentence += '.';
+                    return '• ' + sentence;
+                }).join('\n');
+            } else if (!content.startsWith('•') && content.includes('.')) {
+                content = '• ' + content.replace(/\. /g, '.\n• ');
+            }
+            
+            slide.addText(content, {
+                x: contentX, y: 1.3, w: contentW, h: contentH,
+                fontSize: 16, color: 'FFFFFF',
+                fontFace: data.fontTheme,
+                lineSpacing: 1.3
+            });
+        }
+
+        function createChartSlide(slide, slideData, data) {
+            console.log('Creating chart slide with data:', slideData);
+            
+            // Slide title
+            slide.addText(slideData.title, {
+                x: 0.5, y: 0.3, w: 9, h: 0.7,
+                fontSize: 28, color: 'FFFFFF', bold: true,
+                fontFace: data.fontTheme
+            });
+            
+            if (data.includeCharts && data.chartData && data.chartData.length > 0) {
+                try {
+                    // Create chart data in proper format for PptxGenJS
+                    const chartData = data.chartData.map(item => ({
+                        name: item.category,
+                        values: [
+                            { name: 'Current', value: item.current },
+                            { name: 'Target', value: item.target }
+                        ]
+                    }));
+
+                    console.log('Formatted chart data:', chartData);
+
+                    // Add chart with fixed positioning
+                    slide.addChart(pptx.charts.COLUMN, chartData, {
+                        x: 0.5, y: 1.5, w: 9.0, h: 4.0,
+                        showTitle: false,
+                        showLegend: true,
+                        showValue: true,
+                        chartColors: [data.primaryColor.replace('#', ''), data.accentColor.replace('#', '')],
+                        legendPos: 'b',
+                        valAxisLabelFontSize: 12,
+                        catAxisLabelFontSize: 12,
+                        valGridLine: { style: 'solid', color: 'F1F1F1' },
+                        plotArea: { fill: { color: 'FFFFFF' } }
+                    });
+                    
+                    console.log('Chart added successfully');
+                } catch (error) {
+                    console.log('Chart creation failed, creating data table instead:', error);
+                    
+                    // Create a visual data table instead of chart
+                    let tableContent = `Data Summary:\n\n`;
+                    data.chartData.forEach((item, index) => {
+                        tableContent += `• ${item.category}: Current: ${item.current}, Target: ${item.target}\n`;
+                    });
+                    tableContent += `\n${slideData.content || 'Chart data visualization'}`;
+                    
+                    slide.addText(tableContent, {
+                        x: 0.5, y: 1.3, w: 9, h: 4.5,
+                        fontSize: 16, color: 'FFFFFF',
+                        fontFace: data.fontTheme,
+                        lineSpacing: 1.4
+                    });
+                }
+            } else {
+                // Add content instead of chart
+                slide.addText(slideData.content, {
+                    x: 0.5, y: 1.3, w: 9, h: 4.5,
+                    fontSize: 16, color: 'FFFFFF',
+                    fontFace: data.fontTheme
+                });
+            }
+
+            // Add slide image if provided
+            if (slideData.image) {
+                try {
+                    slide.addImage({
+                        data: slideData.image,
+                        x: 7.0, y: 1.5, w: 2.5, h: 2.0
+                    });
+                } catch (error) {
+                    console.log('Could not add slide image:', error);
+                }
+            }
+        }
+
+        function createDiagramSlide(slide, slideData, data) {
+            console.log('Creating diagram slide with data:', slideData);
+            
+            // Slide title
+            slide.addText(slideData.title, {
+                x: 0.5, y: 0.3, w: 9, h: 0.7,
+                fontSize: 28, color: 'FFFFFF', bold: true,
+                fontFace: data.fontTheme
+            });
+            
+            // If slide has image, prioritize it
+            if (slideData.image) {
+                try {
+                    slide.addImage({
+                        data: slideData.image,
+                        x: 0.5, y: 1.3, w: 6.0, h: 4.0
+                    });
+                    
+                    // Add content as description beside the image
+                    slide.addText(slideData.content || 'Diagram content', {
+                        x: 7.0, y: 1.3, w: 2.5, h: 4.0,
+                        fontSize: 14, color: 'FFFFFF',
+                        fontFace: data.fontTheme
+                    });
+                } catch (error) {
+                    console.log('Could not add slide image:', error);
+                    // Fallback to text only
+                    slide.addText(slideData.content || 'Diagram content', {
+                        x: 0.5, y: 1.3, w: 9, h: 4.5,
+                        fontSize: 16, color: 'FFFFFF',
+                        fontFace: data.fontTheme
+                    });
+                }
+            } else {
+                // No image, just content
+                slide.addText(slideData.content || 'Diagram content', {
+                    x: 0.5, y: 1.3, w: 9, h: 4.5,
+                    fontSize: 16, color: 'FFFFFF',
+                    fontFace: data.fontTheme
+                });
+            }
+        }
+
+        function createTimelineSlide(slide, slideData, data) {
+            console.log('Creating timeline slide with data:', slideData);
+            
+            // Slide title
+            slide.addText(slideData.title, {
+                x: 0.5, y: 0.3, w: 9, h: 0.7,
+                fontSize: 28, color: 'FFFFFF', bold: true,
+                fontFace: data.fontTheme
+            });
+            
+            // Timeline content
+            const timelineContent = slideData.content || 'Timeline information not provided';
+            
+            slide.addText(timelineContent, {
+                x: 0.5, y: 1.3, w: 9, h: 4.5,
+                fontSize: 16, color: 'FFFFFF',
+                fontFace: data.fontTheme
+            });
+
+            // Add slide image if provided
+            if (slideData.image) {
+                try {
+                    slide.addImage({
+                        data: slideData.image,
+                        x: 7.0, y: 2.0, w: 2.5, h: 2.0
+                    });
+                } catch (error) {
+                    console.log('Could not add slide image:', error);
+                }
+            }
+        }
+
+        // Initialize the application
+        function initializeApp() {
+            setTimeout(checkLibraryStatus, 1500);
+            generateSlideCustomizers();
+            showStatus('Application initialized with all fixes applied', 'success');
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', initializeApp);
+        
+        // Also check periodically if library loads later
+        const libraryCheckInterval = setInterval(() => {
+            if (typeof PptxGenJS !== 'undefined' && !pptxLibraryLoaded) {
+                checkLibraryStatus();
+                clearInterval(libraryCheckInterval);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
